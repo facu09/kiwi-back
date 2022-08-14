@@ -1,0 +1,96 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  email     String   @unique
+  name      String?
+  password  String
+  role      Role     @default(USER)
+  domicilio String?
+  mobbile   String?
+  pedidos   ttPedidos[]
+}
+
+model ttPedidos {
+  idPedido        Int       @id @default(autoincrement())
+  fecHsAltPedido  DateTime  @default(now())
+  fecHsEnvio      DateTime
+  user            User      @relation(fields: [userId], references: [id])
+  userId          Int
+  domicilio       String?
+  mobbile         String?
+  dscPedido       String?
+  totalPedido     Decimal
+  totalPaga       Decimal?
+  totalVuelto     Decimal?
+  xAsingadoCadete String?
+  fecHsAsignado   DateTime?
+  xEntregado      String?
+  fecHsEntregado  DateTime?
+  obsEntregaUs    String?
+  pedidoDiferido  Boolean?
+  canceladoXUs    Boolean?
+  motivoCancelUs  String?
+  canceladoXHel   Boolean?
+  motivoCancelHel String?
+  lineas          ttPedidosLineas[]
+}
+
+model ttPedidosLineas {
+  idLinea         Int         @id @default(autoincrement())
+  pedido          ttPedidos   @relation(fields: [pedidoId], references: [idPedido])
+  pedidoId        Int
+  producto        ttProductos @relation(fields: [prodCod], references: [codProd])
+  prodCod         String
+  cantidad        Decimal
+  precioUnit      Decimal
+  importe         Decimal
+  importeConIVA   Decimal
+  dscLinea        String?
+  detalle         ttPedidosLineasDetalle[]
+}
+
+model ttPedidosLineasDetalle {
+  idDetLineaPed   Int               @id @default(autoincrement())
+  ttPedidosLineas ttPedidosLineas   @relation(fields: [pedidoLineaId], references: [idLinea])
+  pedidoLineaId   Int
+  ttgustos        ttGustos          @relation(fields: [gustoId], references: [idGusto])
+  gustoId         Int
+}
+
+model ttGustos {
+  idGusto         Int               @id
+  nomGusto        String
+  dscGusto        String?
+  pedidosDetalle  ttPedidosLineasDetalle[]
+}
+
+model ttProductos {
+  codProd         String           @id
+  nomProd         String
+  unidad          String
+  precioUnitFinal @db.Moey
+  foto            String?    
+  pedidosLineas   ttPedidosLineas[]        
+}
+
+
+
