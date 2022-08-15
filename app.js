@@ -3,11 +3,14 @@ const express = require("express");
 // const connectMongoDB = require("./utils/clientMongo").connectMongoDB;
 const bodyParser= require("body-parser");
 
-// const usersRouter = require("./routes/users")
-// const tiposGastosRouter = require("./routes/tiposGastos");
+const usersRouter = require("./routes/users")
+const authRouter = require("./routes/auth");
+const gustosRouter = require("./routes/gustos");
+const productosRouter = require("./routes/productos")
+const pedidosRouter = require("./routes/pedidos")
 // const gastosRouter = require("./routes/gastos");
 // const consultasRouter = require("./routes/consultas");
-// const authRouter = require("./routes/auth");
+
 
 // const PORT = 3000;
 // Para q funque en Heroku
@@ -22,11 +25,16 @@ app.use("/api/auth", authRouter );
 //ataja todas las rutas que arranquen con "api/user" --> y las tira al /routes/users.js
 app.use("/api/users", usersRouter);
 
-//ataja todas las rutas que arranquen con "api/tiposGasto" --> y las tira al /routes/tiposGastos.js
-app.use("/api/tiposGastos", tiposGastosRouter);
+//ataja todas las rutas que arranquen con "api/tiposGasto" --> y las tira al /routes/gustos.js
+app.use("/api/gustos", gustosRouter);
 
-//ataja todas las rutas que arranquen con "api/gastos" --> y las tira al /routes/gastos.js
-app.use("/api/gastos", gastosRouter);
+//ataja todas las rutas que arranquen con "api/productos" --> y las tira al /routes/productos.js
+app.use("/api/productos", productosRouter);
+
+//ataja todas las rutas que arranquen con "api/pedidos" --> y las tira al /routes/pedidos.js
+app.use("/api/pedidos", pedidosRouter);
+
+
 
 //ataja todas las rutas que arranquen con "api/consultas" --> y las tira al /routes/consultas.js
 app.use("/api/consultas", consultasRouter);

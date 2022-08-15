@@ -56,32 +56,32 @@ const registerUser = async (req, res, next) => {
         }
         //Fin 1ºGuardo en Prisma Heroku PostgreSQL -------
 
-        //2º Guardo en MongoDB Entidad Login (Principal) 
-        newUser = {
-            firstName: userBody.firstName,
-            lastName: userBody.lastName,
-            email: userBody.email,
-            password: hash,
-            role: "USER",
-        };
-        // creo el usuario en las 2 bases
-        await userMongo.createUser(newUser);
-        res.json("Created user OK en Heroku.PostgreSQL and in Atlas.MongoDB. User email:" + userBody.email + "." )
+        // //2º Guardo en MongoDB Entidad Login (Principal) 
+        // newUser = {
+        //     firstName: userBody.firstName,
+        //     lastName: userBody.lastName,
+        //     email: userBody.email,
+        //     password: hash,
+        //     role: "USER",
+        // };
+        // // creo el usuario en las 2 bases
+        // await userMongo.createUser(newUser);
+        // res.json("Created user OK en Heroku.PostgreSQL and in Atlas.MongoDB. User email:" + userBody.email + "." )
 
-        console.log("Si llegó acá: -->  Grabó bien en las 2 DB")
-        lbInsertOKinMongo = true
+        // console.log("Si llegó acá: -->  Grabó bien en las 2 DB")
+        // lbInsertOKinMongo = true
 
     } catch (error) {
         console.log("entro al Catch del Controllers.auth.registerUser.DelInsertDelMongo()")
         res.status(500).json({ message: error.message + ". Proced with RollBack LAST INSERT into Heroku.PostgreSQL.User" });
         //Si se insertó bien en Heroku y no en Atlas
         // console.log("despues del msj erro de que no mongueó" +  lbInsertOKinPostgre + " " + lbInsertOKinMongo )
-        if (lbInsertOKinPostgre && !lbInsertOKinMongo) {
-            //Borro en Heroku.PostgreSQL
-            console.log("Entro al if del Rollback manual.")
-            User.deleteByEmail(userBody.email)
-            console.log("RollBackeo y Borro el usuario de Heroku.PostgreSQL.Users")
-        }
+        // if (lbInsertOKinPostgre && !lbInsertOKinMongo) {
+        //     //Borro en Heroku.PostgreSQL
+        //     console.log("Entro al if del Rollback manual.")
+        //     User.deleteByEmail(userBody.email)
+        //     console.log("RollBackeo y Borro el usuario de Heroku.PostgreSQL.Users")
+        // }
         return;
     } 
 }
@@ -190,33 +190,33 @@ const validLengthPassword = (password) => {
 //Busca el Usuario 1ero en Mongo y luego en PostgreSQL para obtener el user.id para tenerlo para todas las consultas
 const searchUserByEmail = async (email) => {
 try{
-    console.log ("Va a ir a buscar a Mongo 1ero")
-    const user1 = await userMongo.findUserByEmail(email)
+    // console.log ("Va a ir a buscar a Mongo 1ero")
+    // const user1 = await userMongo.findUserByEmail(email)
     
-    //Falta buscar en Mongo, deberia buscar en Atlas.Mongo 
-    // Si falla deberia ir al Servicio Redundante de Loguin que Heroku ==> armar try cacth
-    if (user1) {
-        console.log ("Encontró por Mongo");
+    // //Falta buscar en Mongo, deberia buscar en Atlas.Mongo 
+    // // Si falla deberia ir al Servicio Redundante de Loguin que Heroku ==> armar try cacth
+    // if (user1) {
+    //     console.log ("Encontró por Mongo");
         
        
-        // Va buscar el Id de Usuario al PostgreSQL.User.id para tenerlo en todas las consultas.
-        //Busco en Heroku.PostgreSQL
-        const user2 = await User.findByEmail(email);
-        const idUserPostgreSQL = user2.id
-        return { user: user1, porMongo: true, IdUserPostgre: idUserPostgreSQL};
+    //     // Va buscar el Id de Usuario al PostgreSQL.User.id para tenerlo en todas las consultas.
+    //     //Busco en Heroku.PostgreSQL
+    //     const user2 = await User.findByEmail(email);
+    //     const idUserPostgreSQL = user2.id
+    //     return { user: user1, porMongo: true, IdUserPostgre: idUserPostgreSQL};
         
-    } else{
-        //Si esta caido mongo busco en Herou
-        //Busco en Heroku.PostgreSQL
-        console.log ("Va a ir a buscar a Heroku 2do")
-        const userPostg = await User.findByEmail(email);
-        console.log("User.id PostgreSQL: " + userPostg.id)
-        const idUserPostgreSQL2 = userPostg.id
-        if (userPostg) {
-            console.log ("Encontró por PostgreSQL");
-            return { user: user2, porMongo: false, IdUserPostgre: idUserPostgreSQL2 };
-        }
+    // } else{
+    //     //Si esta caido mongo busco en Herou
+    //     //Busco en Heroku.PostgreSQL
+    console.log ("Va a ir a buscar a Heroku 2do")
+    const userPostg = await User.findByEmail(email);
+    console.log("User.id PostgreSQL: " + userPostg.id)
+    const idUserPostgreSQL2 = userPostg.id
+    if (userPostg) {
+        console.log ("Encontró por PostgreSQL");
+        return { user: user2, porMongo: false, IdUserPostgre: idUserPostgreSQL2 };
     }
+    // }
 } catch {
     //Si esta caido mongo busco en Herou
     //Busco en Heroku.PostgreSQL
