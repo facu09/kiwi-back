@@ -1,26 +1,30 @@
-const prisma = require("../utils/clientPrismaPosgre");
+const prisma = require("../utils/clientPrismaPostgre");
 
 const { v4: uuidv4 } = require("uuid");
 
 class User {
-  constructor(email, name, password, role, id) {
+  constructor(email, name, password, role, domicilio, mobbile, id) {
     this.id = id ? id : uuidv4(); // ⇨ '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed'
     this.email = email;
     this.name = name ? name : "";  //si fuese opcional
     this.password = password;
     this.role = role ? role : "USER";
+    this.domicilio = domicilio;
+    this.mobbile = mobbile;
   }
 
   // Grava la Entidad en db
   async save() {
     try {
-      console.log (this.email + ", " + this.name + ", " + this.password + ", " + this.role )
+      console.log (this.email + ", " + this.name + ", " + this.password + ", " + this.role + ", " + this. domicilio + ", " + this.mobbile)
       await prisma.User.create({
         data: {
           email: this.email,
           name: this.name,
           password: this.password,
           role: this.role,
+          domicilio: this.domicilio, 
+          mobbile: this.mobbile,
         },
       });
       console.log (this)

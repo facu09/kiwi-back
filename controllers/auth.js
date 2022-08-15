@@ -3,27 +3,22 @@ const jwt = require("jsonwebtoken");
 
 const User = require("../models/user");  // este es el que impacta y conoce la DB Horoku.PostgreSQL
 
-const userMongo = require("../models/auth"); // este es el que impacta y conoce la DB MongoDB en ATLAS.
+//# desactivo el MongoDB
+// const userMongo = require("../models/auth"); // este es el que impacta y conoce la DB MongoDB en ATLAS.
 const { connectionString } = require("pg/lib/defaults");
 
 // El registerUser de route es otra ruta para la creación de usuario de los usuario
 //  publicos
 //Armo el CRUD de Registro y Login de Usuarios 
 
-//Da de  Alta el usuario en MongoDB + PostgreSQL, hashea el Password
+//# Testeado el 15/08/22
+//Da de  Alta el usuario solo en PostgreSQL, hashea el Password
 const registerUser = async (req, res, next) => {
-    console.log("ARRANCA DE NUEVO ===========> ")
-    // asum not insert into DB PostgreSQL and MongoDB
-    let lbInsertOKinPostgre = false
-    let lbInsertOKinMongo = false
-    //"firstName": "Roberto Siete",
-    //"lastName": "García",
-    //"email": "robero8gmail.com",
-    //"password": "pass12345"
+    //Tomo el body del request
     const userBody = req.body;
 
     try {
-        //Validation of fields of Post
+        //Validation of fields of Post---------------
         const messageValid = await MessageNotPassValidationRegister(userBody)
         console.log ("mensaje devuelvo x validation:",  messageValid)
         if (messageValid) {
@@ -35,18 +30,21 @@ const registerUser = async (req, res, next) => {
         const hash = await bcrypt.hash(userBody.password, 10);
         
         //1º Guardo en Prisma Heroku PostgreSQL (Redundancy Model) ----
+        //Creo 1 nueva instancia de la clase User del /models/user.js
         let newUser = new User(
             userBody.email,
-            userBody.lastName + ", " + userBody.firstName,
+            userBody.name,
             hash,
-            "USER", 
+            "USER",
+            userBody.domicilio,
+            userBody.mobbile,
         );
         try {
             // Salvando la nueva entidad in -> Heroku.PostgreSQL
             newUser2 = await newUser.save();
-            // res.send(newUser2);  // lo comento para que siga creando en Mongo
+            res.send(newUser2);  //devuelvo el usuario creado
             console.log ("Si llego acá:--> grabo bien en DB.Heroku.PostgreSQL")
-            lbInsertOKinPostgre = true
+
         } catch (error) {
             console.log("entro al Catch del Controllers.auth.registerUser().InsertPostgreSQL")
             // res.statusCode = 500;
@@ -56,32 +54,9 @@ const registerUser = async (req, res, next) => {
         }
         //Fin 1ºGuardo en Prisma Heroku PostgreSQL -------
 
-        // //2º Guardo en MongoDB Entidad Login (Principal) 
-        // newUser = {
-        //     firstName: userBody.firstName,
-        //     lastName: userBody.lastName,
-        //     email: userBody.email,
-        //     password: hash,
-        //     role: "USER",
-        // };
-        // // creo el usuario en las 2 bases
-        // await userMongo.createUser(newUser);
-        // res.json("Created user OK en Heroku.PostgreSQL and in Atlas.MongoDB. User email:" + userBody.email + "." )
-
-        // console.log("Si llegó acá: -->  Grabó bien en las 2 DB")
-        // lbInsertOKinMongo = true
-
     } catch (error) {
-        console.log("entro al Catch del Controllers.auth.registerUser.DelInsertDelMongo()")
-        res.status(500).json({ message: error.message + ". Proced with RollBack LAST INSERT into Heroku.PostgreSQL.User" });
-        //Si se insertó bien en Heroku y no en Atlas
-        // console.log("despues del msj erro de que no mongueó" +  lbInsertOKinPostgre + " " + lbInsertOKinMongo )
-        // if (lbInsertOKinPostgre && !lbInsertOKinMongo) {
-        //     //Borro en Heroku.PostgreSQL
-        //     console.log("Entro al if del Rollback manual.")
-        //     User.deleteByEmail(userBody.email)
-        //     console.log("RollBackeo y Borro el usuario de Heroku.PostgreSQL.Users")
-        // }
+        console.log("entro al Catch del Controllers.auth.registerUser.general. Enla validación antes del insert")
+        res.status(500).json({ message: error.message });
         return;
     } 
 }
@@ -172,9 +147,6 @@ const logoutUser = async (req, res, next) => {
 }
 
 // Validaciones --------------------------------------
-const thereIsFirstName = (firstName) => {
-    return firstName;
-};
 const thereIsEmail = (email) => {
     return email;
 };
@@ -184,77 +156,54 @@ const thereIsPassword = (password) => {
 
 const validLengthPassword = (password) => {
     console.log(password.length)
-    return  !(password.length < 8) 
+    return  !(password.length < 6) 
 };
 
-//Busca el Usuario 1ero en Mongo y luego en PostgreSQL para obtener el user.id para tenerlo para todas las consultas
+
+//# Testeado el 15/08/22
+//Busca el Usuario en DB.PostgreSQL para obtener el user.id para tenerlo para todas las consultas
 const searchUserByEmail = async (email) => {
 try{
-    // console.log ("Va a ir a buscar a Mongo 1ero")
-    // const user1 = await userMongo.findUserByEmail(email)
-    
-    // //Falta buscar en Mongo, deberia buscar en Atlas.Mongo 
-    // // Si falla deberia ir al Servicio Redundante de Loguin que Heroku ==> armar try cacth
-    // if (user1) {
-    //     console.log ("Encontró por Mongo");
-        
-       
-    //     // Va buscar el Id de Usuario al PostgreSQL.User.id para tenerlo en todas las consultas.
-    //     //Busco en Heroku.PostgreSQL
-    //     const user2 = await User.findByEmail(email);
-    //     const idUserPostgreSQL = user2.id
-    //     return { user: user1, porMongo: true, IdUserPostgre: idUserPostgreSQL};
-        
-    // } else{
-    //     //Si esta caido mongo busco en Herou
-    //     //Busco en Heroku.PostgreSQL
     console.log ("Va a ir a buscar a Heroku 2do")
     const userPostg = await User.findByEmail(email);
     console.log("User.id PostgreSQL: " + userPostg.id)
     const idUserPostgreSQL2 = userPostg.id
-    if (userPostg) {
-        console.log ("Encontró por PostgreSQL");
-        return { user: user2, porMongo: false, IdUserPostgre: idUserPostgreSQL2 };
+    if (idUserPostgreSQL2) {
+        console.log ("Mail Encontrado en DB.PostgreSQL");
+        return { user: userPostg, IdUserPostgre: idUserPostgreSQL2 };
     }
-    // }
 } catch {
-    //Si esta caido mongo busco en Herou
-    //Busco en Heroku.PostgreSQL
+    //Si esta caido Herolku.DB 
     console.log("Del catch de searchUserByEmail")
-    const userPostg2 = await User.findByEmail(email);
-    const idUserPostgreSQL22 = userPostg2.id
-    if (user2) {
-        return { user: user2, porMongo: false, IdUserPostgre: idUserPostgreSQL22};
-    }
+    return {user: null  };
 }
-    return {user: null , porMongo: null, };
+    //si llego acá no encontro nada
+    return {user: null  };
 };
 
-
+//# Testeado el 15/08/22
 const MessageNotPassValidationRegister = async (userBody) => {
     //return Message of Error of validacion
     //If pass validation --> return null 
     
-    if (!userBody.firstName) {
-        return "First Name can't be empty."
-    };
-    if (!userBody.lastName) {
-        return "Last Name can't be empty.";
+    if (!userBody.name) {
+        return "El Nombre no puede estar vacío."
     };
     if (!userBody.email) {
-        return "Email can't be empty.";
+        return "Email no puede estar vacío.";
     };
     if (!thereIsPassword(userBody.password)) {
-        return "Password can't be empty.";
+        return "La contraseña no puede estar vacía.";
     };
     if (!validLengthPassword(userBody.password)) {
-        return "Password must have at least 8 caracters."
+        return "Password debe tener al menos 6 caracters."
         ;
     };
-    const { user, porMongo } = await searchUserByEmail(userBody.email);
-    console.log("Loguin: -> Usuario encontrado: ",   user,  " porMongo = ", porMongo );
+    //Valido que no exista un usuario con el mismo email ya.
+    const { user } = await searchUserByEmail(userBody.email);
+    console.log("Loguin: -> Usuario encontrado: ",   user );
     if  (user) {
-        console.log ("Email repido cheeeee")
+        console.log ("Email ya existe.")
         return "Email already exist.";
     };
 
@@ -263,7 +212,6 @@ const MessageNotPassValidationRegister = async (userBody) => {
 };
 
 // Fin Validaciones ----------------------------------------
-
 
 //EXPORTO EL CRUD (Create, Read, Update, Delete )
 module.exports = {

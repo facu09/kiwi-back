@@ -3,47 +3,24 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const User = require("../models/user");  // este es el que impacta y conoce la DB
-const Auth = require("../models/auth")
-
+const Auth = require("../models/auth");  
 
 //Armo el CRUD de Usuarios (Create, Read, Update, Delete )
 
-// Lo va a usar solo el role= "Admin" para crear usuario on demanda "AdHoc"
-//    y sus gastos
+// Es para que el Usuario cree su propio Usuario
 const createUser = async (req, res, next) => {
-    // console.log(req.body);
-    // res.send(req.body) //esto tira json del json que venga en el body
-    const email = req.body.email;
-    const name = req.body.name;
-    const password = req.body.password
-    const role = req.body.role;
 
-    if (!emailIsValid(email)) {
-        res.statusCode = 400;
-        res.send("Email cannot be empty");
-        return;
-    }
-    if (!nameIsValid(name)) {
-        res.statusCode = 400;
-        res.send("Name cannot be empty");
-        return;
-    };
-    if (!passwordIsValid(password)) {
-        res.statusCode = 400;
-        res.send("Password cannot be empty")
+
+    const userBody = req.body
+    const msgValidComunesAltaUser = await MsgNotPasaValidatinCommonNewUser(userBody)
+    console.log ("mensaje devuelvo x validation de Alta de Usuario comun a all roles:",  msgValidComunesAltaUser)
+
+    if (msgValidComunesAltaUser) {
+        res.status(400).json({ message: msgValidComunesAltaUser})
         return
-    }
-    if (!roleIsValid(role)) {
-        res.statusCode = 400;
-        res.send("Role is not valid");
-        return;
-    };
-    if (await userAlreadyExists(email)) { 
-        res.statusCode = 400;
-        res.send("User with this eamil already exists.");
-        return;
     };
 
+    console.log("Entrando al CreateUser, ya paso validaciones, por aca va el req.body", userBody, "y el req.user: ", req.user )
   
     // Si llego acá es que valido bien ==> Creo la entidad
     let newUser = new User(
@@ -51,6 +28,8 @@ const createUser = async (req, res, next) => {
         req.body.name,
         req.body.password,
         req.body.role, 
+        req.body.domicilio,
+        req.body.mobbile
     );
 
     try {
@@ -159,7 +138,6 @@ const updateByEmail = async (req, res, next) => {
 }
 
 
-
 const deleteByEmail = async(req, res, next) => {
 //1ero Borro en Heroku.PostgreSQL y 2do en Atalas.Mongo.
    
@@ -201,6 +179,38 @@ const deleteByEmail = async(req, res, next) => {
 
 
 //Validaciones -------------------------------------
+
+const MsgNotPasaValidatinCommonNewUser = async (userBody) => {
+    if (!emailIsValid(userBody.email)) {
+        res.statusCode = 400;
+        res.send("El email no puede estar vacío");
+        return;
+    };
+    if (!nameIsValid(userBody.name)) {
+        res.statusCode = 400;
+        res.send("El Nombre no puede estar vacío.");
+        return;
+    };
+    if (!passwordIsValid(userBody.password)) {
+        res.statusCode = 400;
+        res.send("La Contraseña no puede estar vacía.")
+        return
+    };
+    if (!roleIsValid(userBody.role)) {
+        res.statusCode = 400;
+        res.send("El Role no es válido.");
+        return;
+    };
+    if (await userAlreadyExists(userBody.email)) { 
+        res.statusCode = 400;
+        res.send("Ya existe este Nombre de usuario.");
+        return;
+    };
+    //Si llega al final y no hay nigun error se devolverá vacío o null
+}
+
+
+
 const emailIsValid = (email) => {
     return email !== "";
 };

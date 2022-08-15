@@ -10,5 +10,6 @@ router.post("/login", AuthController.loginUser);
 
 //  /api/auth --> tira logout
 router.post("/logout", AuthController.logoutUser);
+    //falta hacer petición Postman de eso. 
 
 module.exports = router;
