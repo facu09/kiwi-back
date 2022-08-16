@@ -82,7 +82,9 @@ class User {
     }   
   }
 
-  static async uptadeByEmail (email, name, password, role) {
+  //#Tested 15/08/22
+  static async uptadeByEmail (email, name, password, domicilio, mobbile) {
+    //no actualizo por aca el role (x seguridad)
     try {
       const updatedUser = await prisma.User.update({
         where: {
@@ -91,7 +93,8 @@ class User {
         data: {
           name: name, 
           password: password,
-          role, role,
+          domicilio: domicilio,
+          mobbile: mobbile,
         },
       })
       // console.log (updatedUser)
@@ -104,6 +107,7 @@ class User {
     }   
   }
 
+  //#Tested 15/08/22
   static async deleteByEmail (email) {
     try {
       const deletedUser = await prisma.User.delete({

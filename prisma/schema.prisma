@@ -77,6 +77,7 @@ model ttGustos {
 model ttProductos {
   codProd         String           @id  @db.VarChar(10)
   nomProd         String           @db.VarChar(100)
+  dscProd         String           @db.VarChar(100)
   unidad          String           @db.VarChar(14)
   precioUnitFinal Decimal          @db.Decimal(10,3)         
   foto            String?         

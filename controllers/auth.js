@@ -61,6 +61,8 @@ const registerUser = async (req, res, next) => {
     } 
 }
 
+//# Testeado el 15/08/22
+//Autentica login Usuario y genera Toke con una expiración de 1hs y 30 minutos
 const loginUser = async (req, res, next) => {
     try {
         //Authenticate -------------------
@@ -69,81 +71,54 @@ const loginUser = async (req, res, next) => {
         //Validaciones Previas --------
         if (userBody.email === "") {
             res.statusCode = 400;
-            res.send("Eamil cannot be empty");
+            res.send("El email no puede estar vacío.");
             return;
         };
         if (userBody.password === "" ) {
             res.statusCode = 400;
-            res.send("Password cannot be empty");
+            res.send("La Contraseña no puede estar vacía.");
             return;
         };
         //Fin validaciones previas -------------
         
         //Busco en Usuario x Email en orden: 1ero Mongo, y luego backup redundante Heroku.PostgreSQL
-        const { user, porMongo, IdUserPostgre } = await searchUserByEmail(userBody.email);
-        console.log("Loguin: -> Usuario encontrado: ",   user,  " porMongo = ", porMongo );
+        const { user, IdUserPostgre } = await searchUserByEmail(userBody.email);
+        console.log("Loguin: -> Usuario encontrado: " + IdUserPostgre + " y user.id = " + user.id)
+        console.log("Loguin: -> Usuario encontrado: ",   user );
         if (user) {
-            console.log("Logueando Usuario: --> Usuario Existenteen en MongoDB: ", porMongo)
-            // comparao contra password Heroku.PostgreSQL
+            console.log("Logueando Usuario: --> Usuario Existenten en Postgre.DB: ")
+            // comparo contra password Heroku.PostgreSQL 
             const resultC = await bcrypt.compare(userBody.password, user.password)
-            // Faltaria 1er servidor de autenticación
 
-            if (resultC && porMongo) {
+            if (resultC) {
                 //Armo token con datos de Mongo 
                 const accessToken = jwt.sign(
                     {
-                        id: IdUserPostgre,  //Calve tener el PostgreSQL.User.id para las consultas de este usuario
-                        fistName: user.firstName,
-                        lastName: user.lastName,
-                        email: user.email,
-                        role: user.role,
-                    },
-                    process.env.ACCESS_TOKEN_SECRET_KEY,
-                    { expiresIn: 6000 } //expira en 1 hora
-                );
-                res.json({ accessToken: accessToken });
-                return;
-            } else if (resultC && !porMongo ) {
-                //Armo token con datos de PostreSQL
-                const accessToken = jwt.sign(
-                    {
-                        id: user.id,
+                        id: IdUserPostgre,  //Clave tener el PostgreSQL.User.id para las consultas de este usuario
                         name: user.name,
                         email: user.email,
                         role: user.role,
                     },
                     process.env.ACCESS_TOKEN_SECRET_KEY,
-                    { expiresIn: 60*10 } //expira en tantos segundo
+                    { expiresIn: 60 * 60 + (60 * 30)} //son segundos => expira en 1 hora y media
                 );
-                // Devuevlo el Token para que lo tenga el usuario y el front
                 res.json({ accessToken: accessToken });
                 return;
-            }
+            } 
         }
-        res.status(403).json({ message: "Email and password not valid" });
+        res.status(403).json({ message: "Email and password no son válidos." });
 
     } catch (error) {
         console.log (error);
         res.status(500).json({ message: error.message + ". Problemas en el Login" });
     }
 
-    //     // FALTA MODIFICAR
-    //     // Una vez Autentidado: --> genero el Token y se lo doy como respuesta
-    //     const accessToken = jwt.sign(
-    //         {name:"fcigliuti@gmail.com", role: "admin"}, 
-    //         process.env.ACCESS_TOKEN_SECRET_KEY,
-    //         { expiresIn: 900 })
-    //     res.json({ accessToken: accessToken})
-    // } catch (error) {
-    //     console.log (error);
-    //     res.status(500).json({ message: error.message + ". Problemas en el Login" });
-    // }
 }
 
 const logoutUser = async (req, res, next) => {
     //Logout: 
     //  habrá que matar el token y o el de refresh
-   
+    // Falta ==> esta en una de las clases 
 }
 
 // Validaciones --------------------------------------
@@ -198,6 +173,12 @@ const MessageNotPassValidationRegister = async (userBody) => {
     if (!validLengthPassword(userBody.password)) {
         return "Password debe tener al menos 6 caracters."
         ;
+    };
+    if (!userBody.domicilio) {
+        return "El Domicilio no puede estar vacío.";
+    };
+    if (!userBody.mobbile) {
+        return "El Nro. de Celular no puede estar vacío (Formato +54 Codigo Area ).";
     };
     //Valido que no exista un usuario con el mismo email ya.
     const { user } = await searchUserByEmail(userBody.email);
