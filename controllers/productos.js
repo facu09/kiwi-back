@@ -6,41 +6,16 @@ const Gusto = require("../models/gusto");  // este es el que impacta y conoce la
 
 
 const createProducto = async (req, res, next) => {
-    const codProd = req.body.codProd;
-    const nomProd = req.body.nomProd;
-    const dscProd = req.body.dscProd;
-    const unidad = req.body.unidad;
-    const precioUnitFinal = req.body.precioUnitFinal;
-    const foto = req.body.foto;
-    
-// por ACA VOY RETOCANDO ----------////
-// anduvo el insert
-// tengo que probar todo esto
-// tengo que volve a migrar del excel del mdb
+    prodBody = req.body
+ 
+    //Validation of fields of Post---------------
+    const messageValid = await MessageNotPassValidationCreate(prodBody)
+    console.log ("mensaje devuelvo x validation:",  messageValid)
+    if (messageValid) {
+        res.status(400).json({ message: messageValid})
+        return
+    }
 
-    if (!campoIsNotEmpty(codProd)) {
-        res.statusCode = 400;
-        res.send("El Código del Producto no puede estar vacío.");
-        return;
-    }
-    if (!campoIsNotEmpty(nomProd)) {
-        res.statusCode = 400;
-        res.send("El Nombre del Producto no puede estar vacío.");
-        return;
-    }
-    if (!campoIsNotEmpty(unidad)) {
-        res.statusCode = 400;
-        res.send("La Unidad no puede estar vacía.");
-        return;
-    }
-    //Si ya existe ese codigo de producto
-    if (!await idDosentExist(codProd)) { 
-        res.statusCode = 400;
-        res.send("Ya existe un Producto con este codProd.");
-        return;
-    };
-
-    // falta otras validarciones
     console.log("paso por aca antes de crear newinstance de Producto.")
    
     // Creo la entidad
@@ -61,46 +36,49 @@ const createProducto = async (req, res, next) => {
         res.statusCode = 500;
         res.send(err);
       }
-
 };
 
 const getAllProductos = async (req, res, next) => {
-    const gustos  = await Gusto.getAllGustos();
+    const allProducts  = await Producto.getAllProductos();
     // console.log("Response user", users);
-    res.send(gustos)
+    res.send(allProducts)
 };
 
 const getByCod = async (req, res, next) => {
-    const gustos  = await Gusto.getAllGustos();
-    // console.log("Response user", users);
-    res.send(gustos)
+   console.log ("Va a buscar por CodProd -------> " + req.params.codProd)
+    const prodFinded  = await Producto.findByCod(req.params.codProd);
+   
+    res.send(prodFinded)
 };
 
 const updateByCod = async (req, res, next) => {
-    const nombreGusto = req.body.nombreGusto;
-    const dscGusto = req.body.dscGusto;
+    const nomProd = req.body.nomProd;
+    const dscProd = req.body.dscProd;
+    const unidad = req.body.unidad;
+    const precioUnitFinal =req.body.precioUnitFinal;
+    const foto = req.body.foto;
 
     console.log("---> entro al updataByCod");
-    console.log("Cod: " , req.params.codGusto, ", nombreGusto: ", nombreGusto, ", dscGusto: ", dscGusto)
+    console.log("CodProd: " + req.params.codProd + ", nomProd: ", nomProd, ", dscProd: ", dscProd)
 
-    if (req.params.codGusto === "") {
+    if (req.params.codProd === "") {
         res.statusCode = 400;
-        res.send("codGusto no puede estar vacío");
+        res.send("codProd no puede estar vacío.");
     }
-    if (await idDosentExist(req.params.codGusto)) { 
+    if (!await codProdDoseExist(req.params.codProd)) { 
         res.statusCode = 400;
-        res.send("No existe un Gusto con este codGusto.");
+        res.send("No existe un Producto con este codProd.");
         return;
     };
-    if (!campoIsNotEmpty(nombreGusto)) {
+    if (!campoIsNotEmpty(nomProd)) {
         res.statusCode = 400;
-        res.send("El Nombre del Gusto no puede estar vacío.");
+        res.send("El Nombre del Producto no puede estar vacío.");
         return;
     };
 
-    const gustoUpdated = await Gusto.uptadeByCod(req.params.codGusto, nombreGusto, dscGusto );
+    const productoUpdated = await Producto.uptadeByCod(req.params.codProd, nomProd, dscProd, unidad, precioUnitFinal, foto );
 
-    res.send(gustoUpdated);  
+    res.send(productoUpdated);  
 }
 
 const deleteByCod = async (req, res, next) => {
@@ -109,21 +87,44 @@ const deleteByCod = async (req, res, next) => {
     res.send(gustos)
 };
 
-// Validaciones
+// Validaciones -------------------------------------------------------------
 
-const idDosentExist = async (codGusto) => {
-    const gustoByCod = await Gusto.findByCod(codGusto);
-    console.log ("Encontrado ", gustoByCod)
-    if (gustoByCod) {
-        return false
-    }else {
+const codProdDoseExist = async (codProd) => {
+    const prodByCod = await Producto.findByCod(codProd);
+    console.log ("Encontrado ", prodByCod)
+    if (prodByCod) {
         return true
-    } 
+    }else {
+        return false
+    }    
 }
 
 const campoIsNotEmpty = (campo) => {
     return campo !== "";
 };
+
+const MessageNotPassValidationCreate = async (ProdBody) => {
+    //return Message of Error of validacion
+    //If pass validation --> return null 
+    
+    if (!campoIsNotEmpty(ProdBody.codProducto)) {   
+        return "El Código del Producto no puede estar vacío.";  
+    }
+    if (!campoIsNotEmpty(ProdBody.nomProd)) {
+        return "El Nombre del Producto no puede estar vacío.";
+    }
+    if (!campoIsNotEmpty(ProdBody.unidad)) {
+        return "La Unidad no puede estar vacía.";
+    }
+    //Si ya existe ese codigo de producto
+    if (await codProdDoseExist(ProdBody.codProd)) { 
+        return "Ya existe un Producto con este codProd.";
+    };
+
+    //Si llego acá no hay mensajes de validación de Registro
+    return null
+};
+
 
 module.exports = {
     createProducto,

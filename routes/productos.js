@@ -12,14 +12,14 @@ router.post("/", productosController.createProducto);
 
 //   -->  /api/productos
 router.get("/", productosController.getAllProductos)
-// Esto trae un json {} con todos los productos disponibles en la tabla ttProducto
+// Esto trae un json {} con todos los productos disponibles en la tabla ttProductos
 
 //  --> /api/productos/id/:id
-router.get("/codProducto/:codProducto", productosController.getByCod)
+router.get("/codProd/:codProd", productosController.getByCod)
 // Trea un producto por el codProd
 
 //  --> /api/productos/id/:id
-router.put("/codProducto/:codProducto", productosController.updateByCod)
+router.put("/codProd/:codProd", productosController.updateByCod)
 // Esto actualiza un producto  por el codProd
 
 //  --> /api/productos/id/:id
