@@ -76,6 +76,24 @@ const updateByCod = async (req, res, next) => {
     res.send(gustoUpdated);  
 }
 
+const deleteByCod = async (req, res, next) => {
+    console.log("CodGusto: " + req.params.CodGusto + ".")
+    //Validación previas -------------------
+    if (req.params.codGusto === "") {
+        res.statusCode = 400;
+        res.send("codGusto no puede estar vacío.");
+    }
+    if (await idDosentExist(req.params.codGusto)) { 
+        res.statusCode = 400;
+        res.send("No existe un Gusto con este codGusto.");
+        return;
+    };
+    //Fin Validaciones previas --------------
+
+    const gustoDeleted  = await Gusto.deleteByCod(req.params.codGusto );
+    console.log("gustoDeleted: ", gustoDeleted);
+    res.send(gustoDeleted)
+};
 
 // Validaciones
 
@@ -97,4 +115,5 @@ module.exports = {
     createGusto,
     getAllGustos,
     updateByCod, 
+    deleteByCod,
 };

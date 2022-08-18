@@ -82,9 +82,16 @@ const updateByCod = async (req, res, next) => {
 }
 
 const deleteByCod = async (req, res, next) => {
-    const gustos  = await Gusto.getAllGustos();
-    // console.log("Response user", users);
-    res.send(gustos)
+    console.log("CodProd: " + req.params.codProd + ".")
+    //Validación previa
+    if (req.params.codProd === "") {
+        res.statusCode = 400;
+        res.send("codProd no puede estar vacío.");
+    }
+
+    const prodDeleted  = await Producto.deleteByCod(req.params.codProd );
+    console.log("prodDeleted: ", prodDeleted);
+    res.send(prodDeleted)
 };
 
 // Validaciones -------------------------------------------------------------

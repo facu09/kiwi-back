@@ -52,25 +52,41 @@ class Gusto {
       }   
     }
 
-    static async uptadeByCod (codGusto, nombreGusto, dscGusto) {
-        try {
-          const updatedGusto = await prisma.ttGustos.update({
-            where: {
-              codGusto: parseInt(codGusto,10),
-            },
-            data: {
-              nombreGusto: nombreGusto,
-              dscGusto: dscGusto,
-            },
-          })
-          // console.log (updatedUser)
-          return updatedGusto
-      
-        } catch (error) {
-          console.log(error);
-          throw new Error(error);
-        }   
-      }
+  static async uptadeByCod (codGusto, nombreGusto, dscGusto) {
+      try {
+        const updatedGusto = await prisma.ttGustos.update({
+          where: {
+            codGusto: parseInt(codGusto,10),
+          },
+          data: {
+            nombreGusto: nombreGusto,
+            dscGusto: dscGusto,
+          },
+        })
+        // console.log (updatedUser)
+        return updatedGusto
+    
+      } catch (error) {
+        console.log(error);
+        throw new Error(error);
+      }   
+    }
+
+  static async deleteByCod (codGusto) {
+    try {
+      const deletedGusto = await prisma.ttGustos.delete({
+        where: {
+            codGusto: parseInt(codGusto,10),
+        },
+      })
+      return deletedGusto;
+
+    } catch (error) {
+        console.log(error);
+        throw new Error(error);
+        return;
+    }   
+  }
 
 }
 

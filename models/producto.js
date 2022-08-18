@@ -96,6 +96,22 @@ async save() {
     }   
   }
 
+  static async deleteByCod (codProd) {
+    try {
+      const deletedProd = await prisma.ttProductos.delete({
+        where: {
+            codProd: codProd,
+        },
+      })
+      return deletedProd
+
+    } catch (error) {
+        console.log(error);
+        throw new Error(error);
+        return;
+    }   
+  }
+
 }
 
 

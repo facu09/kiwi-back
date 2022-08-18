@@ -23,7 +23,7 @@ router.put("/codProd/:codProd", productosController.updateByCod)
 // Esto actualiza un producto  por el codProd
 
 //  --> /api/productos/id/:id
-router.delete("/codProducto/:codProducto", productosController.deleteByCod)
+router.delete("/codProd/:codProd", productosController.deleteByCod)
 // Esto elimina un producto por el codProd
 
 // otras rutas de productos ..

@@ -18,7 +18,10 @@ router.get("/", gustosController.getAllGustos)
 router.put("/codGusto/:codGusto", gustosController.updateByCod)
 // Esto actualiza el gusto por el codGusto
 
-//Falta el delete by id
+
+//  --> /api/gustos/codGusto/:codGusto
+router.delete("/codGusto/:codGusto", gustosController.deleteByCod) 
+// Esto elimina un Gusto por el codGusto
 
 // otras rutas de tiposGastos ..
 
