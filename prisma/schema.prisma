@@ -30,7 +30,7 @@ model User {
 model ttPedidos {
   idPedido        Int         @id @default(autoincrement())
   fecHsAltPedido  DateTime    @default(now())
-  fecHsEnvio      DateTime
+  fecHsEnvio      DateTime?
   userId          Int
   domicilio       String?      @db.VarChar(120)
   mobbile         String?      @db.VarChar(30)
@@ -40,6 +40,8 @@ model ttPedidos {
   totalVuelto     Decimal?     @db.Decimal(12,3) 
   xAsingadoCadete String?      @db.VarChar(1)
   fecHsAsignado   DateTime?    
+  nomCadete       String?      @db.VarChar(20)
+  fecHsEstiamdaArribo   DateTime?
   xEntregado      String?      @db.VarChar(1)
   fecHsEntregado  DateTime?
   obsEntregaUs    String?      @db.VarChar(150)

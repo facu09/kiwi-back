@@ -14,15 +14,15 @@ router.post("/", productosController.createProducto);
 router.get("/", productosController.getAllProductos)
 // Esto trae un json {} con todos los productos disponibles en la tabla ttProductos
 
-//  --> /api/productos/id/:id
+//  --> /api/productos/CodProd/:codProd
 router.get("/codProd/:codProd", productosController.getByCod)
 // Trea un producto por el codProd
 
-//  --> /api/productos/id/:id
+//  --> /api/productos/codProd/:codProd
 router.put("/codProd/:codProd", productosController.updateByCod)
 // Esto actualiza un producto  por el codProd
 
-//  --> /api/productos/id/:id
+//  --> /api/productos/codProd/:id
 router.delete("/codProd/:codProd", productosController.deleteByCod)
 // Esto elimina un producto por el codProd
 

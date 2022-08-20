@@ -51,8 +51,8 @@ class Gusto {
         throw new Error(error);
       }   
     }
-
-  static async uptadeByCod (codGusto, nombreGusto, dscGusto) {
+ 
+    static async uptadeByCod (codGusto, nombreGusto, dscGusto) {
       try {
         const updatedGusto = await prisma.ttGustos.update({
           where: {
@@ -72,7 +72,8 @@ class Gusto {
       }   
     }
 
-  static async deleteByCod (codGusto) {
+  
+    static async deleteByCod (codGusto) {
     try {
       const deletedGusto = await prisma.ttGustos.delete({
         where: {

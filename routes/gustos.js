@@ -23,7 +23,7 @@ router.put("/codGusto/:codGusto", gustosController.updateByCod)
 router.delete("/codGusto/:codGusto", gustosController.deleteByCod) 
 // Esto elimina un Gusto por el codGusto
 
-// otras rutas de tiposGastos ..
+// otras rutas de gustos ..
 
 
 module.exports = router;
