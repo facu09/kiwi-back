@@ -18,7 +18,7 @@ enum Role {
 
 model User {
   id        Int         @id @default(autoincrement())
-  createdAt DateTime    @default(now())
+  createdAt DateTime    @default(now())  @db.Timestamptz(0)
   email     String      @db.VarChar(30)   @unique
   name      String?     @db.VarChar(50) 
   password  String      @db.VarChar(120)
@@ -29,8 +29,8 @@ model User {
 
 model ttPedidos {
   idPedido        Int         @id @default(autoincrement())
-  fecHsAltPedido  DateTime    @default(now())
-  fecHsEnvio      DateTime?
+  fecHsAltPedido  DateTime    @default(now())  @db.Timestamptz(0)
+  fecHsEnvioDiferido  DateTime?   @db.Timestamptz(0)
   userId          Int
   domicilio       String?      @db.VarChar(120)
   mobbile         String?      @db.VarChar(30)
@@ -39,11 +39,11 @@ model ttPedidos {
   totalPaga       Decimal?     @db.Decimal(12,3) 
   totalVuelto     Decimal?     @db.Decimal(12,3) 
   xAsingadoCadete String?      @db.VarChar(1)
-  fecHsAsignado   DateTime?    
+  fecHsAsignado   DateTime?    @db.Timestamptz(0)
   nomCadete       String?      @db.VarChar(20)
-  fecHsEstiamdaArribo   DateTime?
+  fecHsEstiamdaArribo   DateTime?    @db.Timestamptz(0)
   xEntregado      String?      @db.VarChar(1)
-  fecHsEntregado  DateTime?
+  fecHsEntregado  DateTime?    @db.Timestamptz(0)
   obsEntregaUs    String?      @db.VarChar(150)
   pedidoDiferido  Boolean?     
   canceladoXUs    Boolean?

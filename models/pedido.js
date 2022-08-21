@@ -1,4 +1,5 @@
 const prisma = require("../utils/clientPrismaPostgre");
+const XDate = require("XDate");
 
 const { v4: uuidv4 } = require("uuid");
 
@@ -64,6 +65,8 @@ async save() {
         const allPedidosXAsignar = await prisma.ttPedidos.findMany({
             where: {
               xAsingadoCadete: null,
+              canceladoXUs: null,
+              canceladoXHel: null,
             },
           })
         return allPedidosXAsignar
@@ -130,12 +133,27 @@ async save() {
     }   
   }
 
-  static async asignarPedidoACadeteById(idPedido, fecHsEstimadaArribo, nomCadete) {
-    console.log("==> asignarPedidoACadeteById --> idPedido:" + idPedido +  ", fecHsEstimada Arribo: " + fecHsEstimadaArribo + ",  cadete: " + nomCadete + "." )
+  static async asignarPedidoACadeteById(idPedido, fecHsEstArribo, nomCadete) {
+   //fecHsEstArribo: si viene lleno viene en formato GMT UTC+00, ej: "2022-08-20T19:37:00.333Z",
+    console.log("==> asignarPedidoACadeteById --> idPedido:" + idPedido +  ", fecHsEstimada Arribo: " + fecHsEstArribo + ",  cadete: " + nomCadete + "." )
 
-    const today = new Date();
+    const today = new XDate();
 
-    console.log( today )
+    console.log("Today is ---> :) ", today )
+    console.log("Today is ---> to ISO --> :) ", today.toISOString() )
+
+    let lsFecHsEstimaArribo = today
+
+    //Sino vino fecHsEstiamdaArribo del Front: le agrego 45 minutos (tiempo estandar de demora) a la fecHsAsignado para obetner la fecHsEstimadaArribao
+    if (!fecHsEstArribo || fecHsEstArribo === "") {
+        console.log ("ENTRO AL VACIO o '' --> le sumo 45 minuts a la fecHora Actual: --> ")
+        lsFecHsEstimaArribo = today.addMinutes(45).toISOString()
+    } else {
+        console.log ("ENTRO AL TIENE DATOS DEL FRONT")
+        lsFecHsEstimaArribo = fecHsEstArribo
+    }
+
+    console.log ("La hora de arribo estamiada es: ---> :-)", lsFecHsEstimaArribo)
 
     try {
        const pedidoAsignadoACadete = await prisma.ttPedidos.update({
@@ -144,8 +162,8 @@ async save() {
           },
           data: {
             xAsingadoCadete: "X",
-            fecHsAsignado: new Date("2022-08-20T01:30"),
-            fecHsEstiamdaArribo: new Date("2022-08-20T02:30"),
+            fecHsAsignado: new XDate().toISOString() ,
+            fecHsEstiamdaArribo: lsFecHsEstimaArribo,
             nomCadete: nomCadete,
             // por ahora no se guardan a que cadete --> proxima iteración
           },
@@ -159,15 +177,15 @@ async save() {
   }
 
   static async entregaDePedidoById(idPedido) {
-    console.log("==> entregacionPedidoById --> ", idPedido)
+    console.log("==> Model: entregaDePedidoById --> ", idPedido)
     try {
        const pedidoEntregado = await prisma.ttPedidos.update({
         where: {
-            idPedido: idPedido,
+            idPedido: parseInt(idPedido,10),
           },
           data: {
             xEntregado: "X",
-            fecHsEntregado: now(),
+            fecHsEntregado: new XDate().toISOString(),
           },
         })
         // console.log (updatedUser)
@@ -178,6 +196,7 @@ async save() {
     }   
   }
  
+
 }
 
 

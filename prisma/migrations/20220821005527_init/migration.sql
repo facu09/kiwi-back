@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "ttPedidos" ALTER COLUMN "fecHsEnvio" SET DATA TYPE TIMESTAMPTZ(0);

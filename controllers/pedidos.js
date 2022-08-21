@@ -2,8 +2,10 @@
 const Pedido = require("../models/pedido");  // este es el que impacta y conoce la DB
 const User = require("../models/user");
 
-//para que compile
-const Gusto = require("../models/gusto");  // este es el que impacta y conoce la DB
+const XDate = require("XDate");
+
+// //para que compile
+// const Gusto = require("../models/gusto");  // este es el que impacta y conoce la DB
 
 const createPedido = async (req, res, next) => {
     pedBody = req.body
@@ -101,7 +103,6 @@ const cancelPedidoByIdByUs = async (req, res, next) => {
 
     const pedidoCanceled = await Pedido.cancelPedidoByIdByUs(req.params.idPedido, req.body.userId, req.body.motivoCancelUs );
 
-
     res.send(pedidoCanceled);  
 }
 
@@ -127,39 +128,67 @@ const cancelPedidoByIdByHel = async (req, res, next) => {
 }
 
 const asignarPedidoACadeteById = async (req, res, next) => {
-    console.log("---> entro al asignarPedidoACadeteById");
-    console.log("idPedido: " + req.params.idPedido + ".")
-    console.log("FecHsEstimadaArriba: " + req.body.fecHsEstiamdaArribo + ", NomCadete: " + req.body.nomCadete)
-    
-    //Validación previa
-    if (req.params.idPedido === "") {
-        res.statusCode = 400;
-        res.send("idPedido no puede estar vacío.");
-        return;
-    }
-    if (!await idPedidoDoseExist(req.params.idPedido)) { 
-        res.statusCode = 400;
-        res.send("No existe un Pedido con este idPedido.");
-        return;
-    };
-    if (req.body.fecHsEstimadaArribo === "") {
-        res.statusCode = 400;
-        res.send("La Fecha y Hora estimada de arribo del pedido no puede estar vacío.");
-        return;
-    }
-    if (req.body.nomCadete === "") {
-        res.statusCode = 400;
-        res.send("El Nombre del Cadete no puede estar vacío.");
-        return;
-    }
+    //VC: 
+    //La fecHsEstiamdaArribo: puede venir "" vacia, en ese caso se toma la XDate() + 45 minutos (queda en formato GMT UTC+00: Hora Mundial Coordinada) 
+    //Si fecHsEstiamdaArribo viene con datos: ==> viene en formato GMT: UTC+00, con "Z" al final, ej: "2022-08-20T19:37:00.333Z",
+   try {
+        console.log("---> entro al asignarPedidoACadeteById");
+        console.log("idPedido: " + req.params.idPedido + ".")
+        console.log("FecHsEstimadaArriba: " + req.body.fecHsEstiamdaArribo + ", NomCadete: " + req.body.nomCadete)
+        
+        //Validación previa
+        if (req.params.idPedido === "") {
+            res.statusCode = 400;
+            res.send("idPedido no puede estar vacío.");
+            return;
+        }
+        if (!await idPedidoDoseExist(req.params.idPedido)) { 
+            res.statusCode = 400;
+            res.send("No existe un Pedido con este idPedido.");
+            return;
+        };
+        // Ahora dejo avanzar con vacio coloca en ese caso el model --> hoy + 45 minutos
+        // if (req.body.fecHsEstiamdaArribo === "") {
+        //     res.statusCode = 400;
+        //     res.send("La Fecha y Hora estimada de arribo del pedido no puede estar vacío.");
+        //     return;
+        // }
+        // Falta validar que la fecHsEstiamdaArribo tenga bien formato fecha GMT UTC+00 este bien cargada
+       
+        const ldFecHsEstimArr = new XDate(req.body.fecHsEstiamdaArribo)
 
-    const pedidoAsignCadete = await Pedido.asignarPedidoACadeteById(req.params.idPedido, req.body.fecHsEstimadaArribo, req.body.nomCadete );
-    console.log("pedidoAsignadoCadete : ", pedidoAsignCadete);
-    res.send(pedidoAsignCadete)
+        if (req.body.fecHsEstiamdaArribo) {
+            console.log("Convertí la FecHsEstimArr: --> ", ldFecHsEstimArr )
+            if ((ldFecHsEstimArr).valid()) {
+                //Lo dejo pasar
+                // res.statusCode = 200;
+                // res.send("La Fecha y Hora estimada de arribo del pedido ES RECONTRA VÁLIDA.");
+                // return;
+            } else {
+                res.statusCode = 400;
+                res.send("La Fecha y Hora estimada de arribo del pedido NO es Válida.");
+                return;
+            }
+        }
+        if (req.body.nomCadete === "") {
+            res.statusCode = 400;
+            res.send("El Nombre del Cadete no puede estar vacío.");
+            return;
+        }
+
+        const pedidoAsignCadete = await Pedido.asignarPedidoACadeteById(req.params.idPedido, ldFecHsEstimArr.toISOString(), req.body.nomCadete );
+        console.log("pedidoAsignadoCadete: ", pedidoAsignCadete);
+        res.send(pedidoAsignCadete)
+
+   } catch (error) {
+        console.log(error);
+        throw new Error(error);
+   }
+
 };
 
 const entregaDePedidoById = async (req, res, next) => {
-    console.log("---> entro al entregaDePedidoById");
+    console.log("---> entró al entregaDePedidoById");
     console.log("idPedido: " + req.params.idPedido + ".")
     //Validación previa
     if (req.params.idPedido === "") {
