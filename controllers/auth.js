@@ -83,21 +83,24 @@ const loginUser = async (req, res, next) => {
         
         //Busco en Usuario x Email en orden: 1ero Mongo, y luego backup redundante Heroku.PostgreSQL
         const { user, IdUserPostgre } = await searchUserByEmail(userBody.email);
-        console.log("Loguin: -> Usuario encontrado: " + IdUserPostgre + " y user.id = " + user.id)
         console.log("Loguin: -> Usuario encontrado: ",   user );
+    
         if (user) {
+            console.log("Loguin: -> Usuario encontrado: " + IdUserPostgre + " y user.id = " + user.id)
             console.log("Logueando Usuario: --> Usuario Existenten en Postgre.DB: ")
             // comparo contra password Heroku.PostgreSQL 
             const resultC = await bcrypt.compare(userBody.password, user.password)
 
             if (resultC) {
-                //Armo token con datos de Mongo 
+                //Armo token con datos de DB 
                 const accessToken = jwt.sign(
                     {
                         id: IdUserPostgre,  //Clave tener el PostgreSQL.User.id para las consultas de este usuario
                         name: user.name,
                         email: user.email,
                         role: user.role,
+                        domicilio: user.domicilio, 
+                        mobbile: user.mobbile,
                     },
                     process.env.ACCESS_TOKEN_SECRET_KEY,
                     { expiresIn: 60 * 60 + (60 * 30)} //son segundos => expira en 1 hora y media
@@ -107,7 +110,7 @@ const loginUser = async (req, res, next) => {
             } 
         }
         res.status(403).json({ message: "Email and password no son válidos." });
-
+        return;
     } catch (error) {
         console.log (error);
         res.status(500).json({ message: error.message + ". Problemas en el Login" });
@@ -139,8 +142,14 @@ const validLengthPassword = (password) => {
 //Busca el Usuario en DB.PostgreSQL para obtener el user.id para tenerlo para todas las consultas
 const searchUserByEmail = async (email) => {
 try{
-    console.log ("Va a ir a buscar a Heroku 2do")
+    console.log ("Va a ir a buscar a Heroku DB")
     const userPostg = await User.findByEmail(email);
+    
+    console.log (userPostg)
+
+    if (!userPostg) {
+        return { user: null, idUserPostgre: null}
+    }
     console.log("User.id PostgreSQL: " + userPostg.id)
     const idUserPostgreSQL2 = userPostg.id
     if (idUserPostgreSQL2) {

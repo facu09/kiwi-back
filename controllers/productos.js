@@ -88,6 +88,11 @@ const deleteByCod = async (req, res, next) => {
         res.statusCode = 400;
         res.send("codProd no puede estar vacío.");
     }
+    if (!await codProdDoseExist(req.params.codProd)) { 
+        res.statusCode = 400;
+        res.send("No existe un Producto con este codProd.");
+        return;
+    };
 
     const prodDeleted  = await Producto.deleteByCod(req.params.codProd );
     console.log("prodDeleted: ", prodDeleted);

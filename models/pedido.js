@@ -91,7 +91,7 @@ async save() {
     }   
   } 
 
-  static async cancelPedidoByIdByUs(idPedido, userId, motivoCancelUs) {
+  static async cancelPedidoByIdByUs(idPedido, motivoCancelUs) {
     console.log("==> cancelPedidoById --> ", idPedido, " motivo: ", motivoCancelUs)
     try {
       // console.log("el mail recibido en findByEmail", email)
@@ -133,39 +133,21 @@ async save() {
     }   
   }
 
-  static async asignarPedidoACadeteById(idPedido, fecHsEstArribo, nomCadete) {
-   //fecHsEstArribo: si viene lleno viene en formato GMT UTC+00, ej: "2022-08-20T19:37:00.333Z",
-    console.log("==> asignarPedidoACadeteById --> idPedido:" + idPedido +  ", fecHsEstimada Arribo: " + fecHsEstArribo + ",  cadete: " + nomCadete + "." )
-
-    const today = new XDate();
-
-    console.log("Today is ---> :) ", today )
-    console.log("Today is ---> to ISO --> :) ", today.toISOString() )
-
-    let lsFecHsEstimaArribo = today
-
-    //Sino vino fecHsEstiamdaArribo del Front: le agrego 45 minutos (tiempo estandar de demora) a la fecHsAsignado para obetner la fecHsEstimadaArribao
-    if (!fecHsEstArribo || fecHsEstArribo === "") {
-        console.log ("ENTRO AL VACIO o '' --> le sumo 45 minuts a la fecHora Actual: --> ")
-        lsFecHsEstimaArribo = today.addMinutes(45).toISOString()
-    } else {
-        console.log ("ENTRO AL TIENE DATOS DEL FRONT")
-        lsFecHsEstimaArribo = fecHsEstArribo
-    }
-
-    console.log ("La hora de arribo estamiada es: ---> :-)", lsFecHsEstimaArribo)
-
+  static async asignarPedidoACadeteById(idPedido, fecHsEstArriboEnIsoString, idUserCadete, nomCadete) {
+   //VC fecHsEstArriboEnIsoString: siempre viene lleno en formato ISO GMT UTC+00, ej: "2022-08-20T19:37:00.333Z" con lo que hay pener en la DB
     try {
-       const pedidoAsignadoACadete = await prisma.ttPedidos.update({
+      console.log(".Model: asignarPedidoACadeteById --> idPedido:" + idPedido +  ", fecHsEstimada Arribo: " + fecHsEstArriboEnIsoString + ",  cadete: " + nomCadete + "." )
+
+      const pedidoAsignadoACadete = await prisma.ttPedidos.update({
         where: {
             idPedido: parseInt(idPedido,10),
           },
           data: {
             xAsingadoCadete: "X",
             fecHsAsignado: new XDate().toISOString() ,
-            fecHsEstiamdaArribo: lsFecHsEstimaArribo,
+            fecHsEstiamdaArribo: fecHsEstArriboEnIsoString,
+            idUserCadete:  idUserCadete,
             nomCadete: nomCadete,
-            // por ahora no se guardan a que cadete --> proxima iteración
           },
         })
         // console.log (updatedUser)

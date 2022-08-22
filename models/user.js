@@ -39,14 +39,15 @@ class User {
 
   static async findByEmail(email) {
     try {
-      // console.log("el mail recibido en findByEmail", email)
-      const userfinded = await prisma.User.findUnique({
-        where: {
-          email: email,
-        },
-      })
-      // console.log("el userfinded:" ,userfinded)
-      return userfinded;
+        // console.log("el mail recibido en findByEmail", email)
+        const userfinded = await prisma.User.findUnique({
+          where: {
+            email: email,
+          },
+        })
+        console.log("findByEmail: el userfinded: " ,userfinded)
+        return userfinded;
+    
     } catch (error) {
         console.log(error);
         throw new Error(error);
@@ -108,11 +109,21 @@ class User {
   }
 
   //#Tested 15/08/22
+  // FALTA: NO dar de baja, Updatear a Estado = "INACTIVO"
+  // FALTA VER CIRCUITO: EN ALTA SI EXISTE PERO ESTA INACTIVO ==> 
+  //      ==> HACER Update y pasar Estado = "Activo"
+  //      ==> Deberia cambiar el Login: y chequear que este "Activo"
+  // Falta Cicuito de Recuperación de Contraseña
+  // ---> para Next Iteration.
   static async deleteByEmail (email) {
+  //Hago bajas lógicas: no borro, paso el registro a Desactivado.
     try {
-      const deletedUser = await prisma.User.delete({
+      const deletedUser = await prisma.User.update({
         where: {
           email: email,
+        },
+        data: {
+          estadoActivo: false, 
         },
       })
       return deletedUser

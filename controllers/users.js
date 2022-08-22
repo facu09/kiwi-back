@@ -4,6 +4,8 @@ const jwt = require("jsonwebtoken");
 
 const User = require("../models/user");  // este es el que impacta y conoce la DB
 
+let moMensajeRes = {};  // creo variable global tipo objeto a nivel de modulo para pasar los mensajes de Res
+
 //Armo el CRUD de Usuarios (Create, Read, Update, Delete )
 
 //# Testeado el 15/08/22
@@ -11,7 +13,7 @@ const User = require("../models/user");  // este es el que impacta y conoce la D
 const createUser = async (req, res, next) => {
 
     const userBody = req.body
-    const msgValidComunesAltaUser = await MsgNotPasaValidatinCommonNewUser(userBody)
+    const msgValidComunesAltaUser = await MsgNotPasaValidatinCommonNewUser(userBody, res)
     console.log ("mensaje devuelvo x validation de Alta de Usuario comun a all roles:",  msgValidComunesAltaUser)
 
     if (msgValidComunesAltaUser) {
@@ -21,11 +23,14 @@ const createUser = async (req, res, next) => {
 
     console.log("Entrando al CreateUser, ya paso validaciones, por aca va el req.body", userBody, "y el req.user: ", req.user )
   
+    // Si llego acá: --> Hashe Password y Guardo ---------
+    const hash = await bcrypt.hash(userBody.password, 10);
+
     // Si llego acá es que valido bien ==> Creo la entidad
     let newUser = new User(
         req.body.email,
         req.body.name,
-        req.body.password,
+        hash,
         req.body.role, 
         req.body.domicilio,
         req.body.mobbile
@@ -83,10 +88,21 @@ const updateByEmail = async (req, res, next) => {
     console.log("---> entro al updataByEmail");
     console.log("email: " , req.params.email, ", nombre: ", name, ", password: " , password, " , domicilio: " , domicilio, ", mobbile; " , mobbile)
 
+    //Validaciones Previas
     if (req.params.email === "") {
         res.statusCode = 400;
         res.send("El Eamil no puede estar vacío.");
     }
+
+    //Veo de Permisos si puedo o no: ADMIN puede siempre, USER solo su usuario: ------------------------------
+    if (!usuarioTienePermisoParaUpdate(req.user.role, req.user.userId, req.user.email, req.params.email )) {
+        //Salgo El mensaje send ya salio en la funcion de arriba
+        res.status(401).json(moMensajeRes)
+        return
+    }
+    //Fin Evaluación de Permisos -------------------------------------
+
+    //Resto de las validaciones -------------------------
     if (await userDosentExist(req.params.email)) { 
         res.statusCode = 400;
         res.send("No existe usuario regisrado con este email.");
@@ -117,7 +133,7 @@ const updateByEmail = async (req, res, next) => {
     // Si llego acá: --> Hashe Password y Guardo ---------
     const hash = await bcrypt.hash(password, 10);
     console.log ("Haseó la password: " + hash)
-
+ 
     try {
         const userUpdated1 = await User.uptadeByEmail(req.params.email, name, hash, domicilio, mobbile );
 
@@ -130,6 +146,7 @@ const updateByEmail = async (req, res, next) => {
 
         } else {
             res.status(500).json({ message: error.message + ". Call and tell the Admin Rol that Update has not done properly for email '" + req.params.email + "'." });  
+            return;
         }
 
     } catch (error) {
@@ -140,15 +157,25 @@ const updateByEmail = async (req, res, next) => {
 
 //# Testeado el 15/08/22 --> ok
 const deleteByEmail = async(req, res, next) => {
-//1ero Borro en Heroku.PostgreSQL y 2do en Atalas.Mongo.
+//VC: Baja Logica, no borro para no perder integridad referencial
+//1ero Updateo en Heroku.PostgreSQL y 2do en Atalas.Mongo, si la hubiera
    
-    // console.log("--------> ", req.params.email )
+    console.log("Entro función deleteByEmail --------> ", req.params.email , "El usuario logueado tiene: ", req.user.role, " , email: ", req.user.email)
+
     //Validaciones Previas 
     if (req.params.email === "") {
         res.statusCode = 400;
         res.send("Eamil no puede estar vacío.");
         return;
     }
+    //Veo de Permisos si puedo o no: ADMIN puede siempre, USER solo su usuario: ------------------------------
+    if (!usuarioTienePermisoParaUpdate(req.user.role, req.user.userId, req.user.email, req.params.email )) {
+        //Salgo El mensaje send ya salio en la funcion de arriba
+        res.status(401).json(moMensajeRes)
+        return
+    }
+    //Fin Evaluación de Permisos -------------------------------------
+
     //Sino existe el usuario
     if (await userDosentExist(req.params.email)) { 
         console.log("--> Entrando a buscar si existe el email a borrar")
@@ -161,53 +188,80 @@ const deleteByEmail = async(req, res, next) => {
         //1ero Borro sobre PostgreSQL
         const userDeleted1 = await User.deleteByEmail(req.params.email);
         if (userDeleted1) {
-            console.log ("Si llego acá borró bien User over PostgreSQL.User ", userDeleted1)
+            console.log ("Si llego acá desactivó bien User over PostgreSQL.User ", userDeleted1)
            
             // res.json("Deleted user OK in Heroku.PostgreSQL.User by email: '" + req.params.email + "'." );
 
-            res.status(200).json({ message: "Deleted user OK in Heroku.PostgreSQL.User by email: '" + req.params.email + "'." , userDeleted: userDeleted1 });
+            res.status(200).json({ message: "User deactivated OK in Heroku.PostgreSQL.User by email: '" + req.params.email + "'." , userDeleted: userDeleted1 });
 
             return;
 
         } else {
-            res.status(500).json({ message: error.message + ". Call and tell the Admin Rol that Deleted has not done properly for email '" + req.params.email + "' over PostgreSQL.User"}); 
+            res.status(500).json({ message: error.message + ". Call and tell the Admin Role that the Deactivation has not done properly for email '" + req.params.email + "' over PostgreSQL.User"}); 
         }
     } catch (error) {
-        res.status(500).json({ message: error.message + ". Call and tell the Admin Rol that Deleted has not done properly for email '" + req.params.email + "'" });    
+        res.status(500).json({ message: error.message + ". Call and tell the Admin Role that Deactivation has not done properly for email '" + req.params.email + "'" });    
     }            
 }
 
+
+
 //Validaciones -------------------------------------
 
-const MsgNotPasaValidatinCommonNewUser = async (userBody) => {
+const MsgNotPasaValidatinCommonNewUser = async (userBody, res) => {
     if (!emailIsValid(userBody.email)) {
-        res.statusCode = 400;
-        res.send("El email no puede estar vacío");
-        return;
+        // res.statusCode = 400;
+        //res.send("El email no puede estar vacío");
+        return "El email no puede estar vacío";
     };
     if (!nameIsValid(userBody.name)) {
-        res.statusCode = 400;
-        res.send("El Nombre no puede estar vacío.");
-        return;
+        // res.statusCode = 400;
+        // res.send("El Nombre no puede estar vacío.");
+        return "El Nombre no puede estar vacío.";
     };
     if (!passwordIsValid(userBody.password)) {
-        res.statusCode = 400;
-        res.send("La Contraseña no puede estar vacía.")
-        return
+        // res.statusCode = 400;
+        // res.send("La Contraseña no puede estar vacía.")
+        return "La Contraseña no puede estar vacía.";
+    };
+    if (!validLengthPassword(userBody.password)) {
+        return "La Contraseña debe tener al menos 6 caracters."
+        ;
     };
     if (!roleIsValid(userBody.role)) {
-        res.statusCode = 400;
-        res.send("El Role no es válido.");
-        return;
+        // res.statusCode = 400;
+        // res.send("El Role no es válido.");
+        return "El Role no es válido.";
     };
     if (await userAlreadyExists(userBody.email)) { 
-        res.statusCode = 400;
-        res.send("Ya existe este Nombre de usuario.");
-        return;
+        // res.statusCode = 400;
+        // res.send("Ya existe este Nombre de usuario.");
+        return "Ya existe este Nombre de usuario.";
     };
     //Si llega al final y no hay nigun error se devolverá vacío o null
 }
 
+const usuarioTienePermisoParaUpdate = (userRole, userId, userEmailLoged, userEmailToUpdate ) => {
+//Aprehendizaje: los objetos pasan por Referencia
+    if (userRole === "ADMIN") {
+        console.log ("usuarioTienePermisoParaUpdate: TRUE; xque es ADMIN")
+        return true
+    }
+    if (userRole === "USER" && userEmailLoged === userEmailToUpdate) {
+        console.log ("usuarioTienePermisoParaUpdate: TRUE: xque es el mismo Usuario")
+        return true
+    } else {
+        console.log ("usuarioTienePermisoParaUpdate: FALSE: xque NO es el mismo Usuario")
+       
+        moMensajeRes = {mensaje: "'USER' role can't update data User to other Users, only ADMIN role can do it. "}
+
+        // ahora manda el res el modulo principal
+        // res.status(401).json({ message: "'USER' role can't update data User to other Users, only ADMIN role can do it. "})
+        return false
+    }
+    console.log("usuarioTienePermisoParaUpdate: No debería llegar acá. userRole distintos a los requeridos, fallo middlewares de autorization")
+    return false
+}
 
 
 const emailIsValid = (email) => {
@@ -219,9 +273,13 @@ const nameIsValid = (name) => {
 const passwordIsValid = (password) =>  {
     return password !== "";
 }
+const validLengthPassword = (password) => {
+    console.log(password.length)
+    return  !(password.length < 6) 
+};
 const roleIsValid = (role) => {
     return ( role !== "" &&
-            (role === "USER" || role === "ADMIN") )
+            (role === "USER" || role === "ADMIN" || role === "CADETE") )
 };
 
 const userAlreadyExists = async (email) => {
