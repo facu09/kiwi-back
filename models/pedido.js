@@ -4,7 +4,7 @@ const XDate = require("XDate");
 const { v4: uuidv4 } = require("uuid");
 
 class Pedido {
-    constructor( userId, domicilio, mobbile, dscPedido, totalPedido, totalPaga, totalVuelto, pedidoDiferido) {
+    constructor( userId, domicilio, mobbile, dscPedido, totalPedido, totalPaga, totalVuelto, pedidoDiferido ) {
       this.userId = userId;
       this.domicilio = domicilio;
       this.mobbile = mobbile;
@@ -26,7 +26,8 @@ async save() {
             this.totalPaga + ", " +
             this.totalVuelto + ", " +
             this.pedidoDiferido + ".")
-        await prisma.ttPedidos.create({
+        
+        const newPed = await prisma.ttPedidos.create({
             data: {
                 userId : this.userId,
                 domicilio: this.domicilio,
@@ -38,8 +39,10 @@ async save() {
                 pedidoDiferido: this.pedidoDiferido,
             },
         });
-        console.log (this)
-        return this; //devuelvo la instancia de pedido que se construyó
+        // console.log (this)
+        // console.log (newPed)
+        // return this; //devuelvo la instancia de pedido que se construyó
+        return newPed  //devuelvo el registro que se creo en DB para poder tener el idPedido Autonumerico que se creo
     } catch (err){
         return "Error e models/pedidos" + err;
     }
@@ -100,6 +103,7 @@ async save() {
             idPedido: parseInt(idPedido,10),
           },
           data: {
+            fecHsCancelPedido: new XDate().toISOString(),
             canceladoXUs: true,
             motivoCancelUs: motivoCancelUs,
           },
@@ -121,6 +125,7 @@ async save() {
             idPedido:  parseInt(idPedido,10),
           },
           data: {
+            fecHsCancelPedido: new XDate().toISOString(),
             canceladoXHel: true,
             motivoCancelHel: motivoCancelHel,
           },
@@ -177,9 +182,85 @@ async save() {
         throw new Error(error);
     }   
   }
- 
+}
 
+class LineaPedido {
+  constructor( idPedido, codProd, cantidad, precioUnit, importe, importeConIVA, dscLinea ) {
+    this.idPedido = idPedido;
+    this.codProd = codProd;
+    this.cantidad = cantidad;
+    this.precioUnit = precioUnit;
+    this.importe = importe;
+    this.importeConIVA  = importeConIVA;
+    this.dscLinea = dscLinea;
+  }
+
+//Acá va el Alta en la DB la linea asociada al Pedido
+async save() {
+  try {
+      console.log (".Entro al Save de la Linea Pedido")
+      console.log (this.idPedido+ ", " +
+          this.codProd + ", " +
+          this.cantidad + ", " +
+          this.precioUnit + ", " +
+          this.importe + ", " +
+          this.importeConIVA + ", " +
+          this.dscLinea + ".")
+      const newLinea = await prisma.ttPedidosLineas.create({
+          data: {
+              idPedido : this.idPedido,
+              codProd: this.codProd,
+              cantidad: this.cantidad,
+              precioUnit: this.precioUnit,
+              importe: this.importe,
+              importeConIVA: this.importeConIVA,
+              dscLinea: this.dscLinea,
+          },
+      });
+      console.log (newLinea)
+      return newLinea; //devuelvo la instancia de pedido que se construyó
+  } catch (err){
+      return "Error e models/pedidos" + err;
+  }
+}
+}
+
+class LineaPedidoDetalle {
+  constructor( idLineaPedido, codGusto, cantGusto ) {
+    this.idLineaPedido = idLineaPedido;
+    this.codGusto = codGusto;
+    this.cantGusto = cantGusto;
+  }
+
+  //Acá va el Alta en la DB la linea asociada al Pedido
+  async save() {
+    try {
+        console.log (this.idLineaPedido+ ", " +
+            this.codGusto + ", " +
+            this.cantGusto + ".")
+        const newLineaDet = await prisma.ttPedidosLineasDetalle.create({
+            data: {
+                idLineaPedido : this.idLineaPedido,
+                codGusto: this.codGusto,
+                cantGusto: this.cantGusto,
+            },
+        });
+        console.log (newLineaDet)
+        return newLineaDet; //devuelvo la instancia de pedido que se construyó
+    } catch (err){
+        return "Error e models/pedidos" + err;
+    }
+  }
 }
 
 
-module.exports = Pedido;
+
+// module.exports = Pedido;
+
+module.exports = { 
+  Pedido, 
+  LineaPedido,
+  LineaPedidoDetalle,
+} ;
+//Aprendizaje: ahora en el controller voy a tener que invocar asi: --> 
+// new Pedido.Pedido(...) para construir.

@@ -1,6 +1,9 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
+//V1.5 de Modelo Kiwi-Pedidos
+//VC: No meto relaciones fisicas entre tablas, lo manejo conceptualmente.
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -49,6 +52,7 @@ model ttPedidos {
   fecHsEntregado  DateTime?    @db.Timestamptz(0)
   obsEntregaUs    String?      @db.VarChar(150)
   pedidoDiferido  Boolean?     
+  fecHsCancelPedido  DateTime?     @db.Timestamptz(0)
   canceladoXUs    Boolean?
   motivoCancelUs  String?      @db.VarChar(100)
   canceladoXHel   Boolean?

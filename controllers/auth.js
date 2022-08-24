@@ -102,8 +102,11 @@ const loginUser = async (req, res, next) => {
                         domicilio: user.domicilio, 
                         mobbile: user.mobbile,
                     },
+                    // process.env.ACCESS_TOKEN_SECRET_KEY,
+                    // { expiresIn: 60 * 60 + (60 * 30)} //son segundos => expira en 1 hora y media
                     process.env.ACCESS_TOKEN_SECRET_KEY,
-                    { expiresIn: 60 * 60 + (60 * 30)} //son segundos => expira en 1 hora y media
+                    { expiresIn: 60 * 60 * 12} //son 12 hora
+                    
                 );
                 res.json({ accessToken: accessToken });
                 return;

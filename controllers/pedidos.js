@@ -1,6 +1,8 @@
 //Controlador Pedidos - Independiente de con que DB esté hecho
 const Pedido = require("../models/pedido");  // este es el que impacta y conoce la DB
 const User = require("../models/user");
+const Producto = require("../models/producto");
+const Gusto = require("../models/gusto");
 
 const XDate = require("XDate");
 
@@ -15,16 +17,16 @@ const createPedido = async (req, res, next) => {
  
     //Validation of fields of Post---------------
     const messageValid = await MessageNotPassValidationCreate(pedBody)
-    console.log ("mensaje devuelvo x validation:",  messageValid)
+    console.log (".Mensaje devuelvo x validation:",  messageValid)
     if (messageValid) {
         res.status(400).json({ message: messageValid})
         return
     }
 
-    console.log("paso por aca antes de crear newinstance de Pedido.")
+    console.log(".Paso por aca antes de crear newinstance de Pedido.")
    
     // Creo la entidad
-    let newPedido = new Pedido(
+    let newPedido = new Pedido.Pedido( 
         // req.body.idPedido,  // se genera solo autoincremental integer
         //req.body.userId, dejo pedirlo en Body ==> lo tomo del token --> solo este, el resto los volvio a ingresar el frontEnd
         req.user.userId,  
@@ -38,13 +40,63 @@ const createPedido = async (req, res, next) => {
     );
     console.log("paso por la creación de instancia newPedido.")
     try {
-        // Salvando la nueva entidad
+        // Salvando la nueva entidad de Pedido
         newPed2 = await newPedido.save();
-        res.send(newPed2);
-      } catch (err) {
+        // res.send(newPed2); //todavia no respondo
+    } catch (err) {
         res.statusCode = 500;
         res.send(err);
-      }
+    }
+      
+    console.log (".Se guardó el Encabezado del Pedido en ttPedidos", newPed2)
+    console.log (".Procedo a Guardar Lineas Pedidos para el idPedido ----> " , newPed2.idPedido, " <----")
+    try {
+        // Salvando la nueva entidad Liena Pedido
+        // pedBody.lineasPedido.forEach(lineaPed => {
+        console.log(".Muestro lenght de arreglo lineasPedido ",  pedBody.lineasPedido.length);
+        i = 0;
+        do {
+             //construyo lineaPedido
+             console.log (".Estoy construyendo newLinea de Pedido");
+
+             let newLinea = new Pedido.LineaPedido(
+                 newPed2.idPedido, 
+                 pedBody.lineasPedido[i].codProd, 
+                 pedBody.lineasPedido[i].cantidad, 
+                 1750, 
+                 pedBody.lineasPedido[i].cantidad * 1750, 
+                 pedBody.lineasPedido[i].cantidad * 1750,
+                "")
+             //salvo linea
+             newLinea2 = await newLinea.save();
+             
+             console.log (".Se guardo LineaPedido en la DB --> ", newLinea2)
+
+             //FALTA ITERAR LOS GUSTOS DE LA LINEA
+
+            //avanzo
+            console.log(`Numero: ${i}`);
+            i++;
+
+        } while (i < pedBody.lineasPedido.length);
+
+           
+        //CORTO PARA PROBAR y Ver Consola
+        res.status(401).send("LO CORTO PARA PROBAR ==================" );
+        return;
+           
+        // });
+    
+    } catch (err) {
+    res.statusCode = 500;
+    res.send(err);
+    }  
+
+    // res.send(newPed2); //todavia no respondo
+
+   
+
+
 };
 
 
@@ -161,8 +213,7 @@ const cancelPedidoByIdByHel = async (req, res, next) => {
 
 const asignarPedidoACadeteById = async (req, res, next) => {
 //Los permisos solo evaluados en la Ruta: Solo ADMIN
-//VC: 
-//La fecHsEstimadaArribo: puede venir "" vacia, en ese caso se toma la XDate() + 45 minutos (queda en formato GMT UTC+00: Hora Mundial Coordinada) 
+//VC: La fecHsEstimadaArribo: puede venir "" vacia, en ese caso se toma la XDate() + 45 minutos (queda en formato GMT UTC+00: Hora Mundial Coordinada) 
 //Si fecHsEstimadaArribo viene con datos: ==> tiene que venir en formato GMT: UTC+00, con "Z" al final, ej: "2022-08-20T19:37:00.333Z",
 
    try {
@@ -355,6 +406,36 @@ const MessageNotPassValidationCreate = async (pedBody) => {
     if (!campoIsNotEmpty(pedBody.totalPedido)) {
         return "El Total del Pedido no puede estar vacío.";
     }
+
+    console.log (".Muestra LINEAS_Pedido: " , pedBody.lineasPedido)
+    // console.log (pedBody.lineasPedido)
+    let liNroLinea = 0
+    //Valido integridad de Lineas --------------------
+    pedBody.lineasPedido.forEach(linea => {
+        //valido Linea
+        // let prodFinded = await Producto.findByCod(linea.codProd);
+        // if (!prodFinded) {
+        //     return "El codProducto '" + linea.codProd + "' de la línea de Pedido Nro. '" + liNroLinea + "' no Existe.";
+        // } else {
+            //agrego datos a la linea del Pedido
+            // linea.PrecioUnit = prodFinded.precioUnitFinal
+            linea.PrecioUnit = 1750
+            linea.importe = linea.cantidad * linea.PrecioUnit
+            linea.importeConIVA =  linea.cantidad * linea.importe
+        // }
+        //valido DetalleLinea Recorro y valido el detalle
+        // linea.detalles.forEach(gusto => {
+        //     const gustoFinded = await Gusto.findByCod(gusto.codGusto);
+        //     if (!gustoFinded) {
+        //         return "El codGusto '" + gusto.codGusto + "'  no Existe.";
+        //     } else {
+        //         //no hago nada: no hay que agrear datos.
+        //     }
+        // }); //Fin Recorrido de Detalles Linea
+        console.log(".Muestro LINEA del PEDIDO QUE SE VA CONFORMANDO: --> " + linea )
+    }); //Fin Recorrido de Lineas
+    
+    // Se acuercada el Front Sabe como mandarlos y el front lo validará
 
     //Si llego acá no hay mensajes de validación de Registro
     return null
