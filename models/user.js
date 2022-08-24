@@ -109,16 +109,15 @@ class User {
   }
 
   //#Tested 15/08/22
-  // FALTA: NO dar de baja, Updatear a Estado = "INACTIVO"
   // FALTA VER CIRCUITO: EN ALTA SI EXISTE PERO ESTA INACTIVO ==> 
   //      ==> HACER Update y pasar Estado = "Activo"
   //      ==> Deberia cambiar el Login: y chequear que este "Activo"
   // Falta Cicuito de Recuperación de Contraseña
   // ---> para Next Iteration.
-  static async deleteByEmail (email) {
+  static async bajaUserByEmail (email) {
   //Hago bajas lógicas: no borro, paso el registro a Desactivado.
     try {
-      const deletedUser = await prisma.User.update({
+      const bajadUser = await prisma.User.update({
         where: {
           email: email,
         },
@@ -126,7 +125,7 @@ class User {
           estadoActivo: false, 
         },
       })
-      return deletedUser
+      return bajadUser
 
     } catch (error) {
       console.log(error);
@@ -134,6 +133,27 @@ class User {
       return;
     }   
   }
+
+  static async activateUserByEmail (email) {
+    //Hago bajas lógicas: no borro, paso el registro a Desactivado.
+      try {
+        const activatedUser = await prisma.User.update({
+          where: {
+            email: email,
+          },
+          data: {
+            estadoActivo: true, 
+          },
+        })
+        return activatedUser
+  
+      } catch (error) {
+        console.log(error);
+        throw new Error(error);
+        return;
+      }   
+    }
+
 
 }//cirra el User Class
 

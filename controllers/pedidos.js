@@ -17,7 +17,7 @@ const createPedido = async (req, res, next) => {
  
     //Validation of fields of Post---------------
     const messageValid = await MessageNotPassValidationCreate(pedBody)
-    console.log (".Mensaje devuelvo x validation:",  messageValid)
+    console.log (".Mensaje devuelvo x validation (Si es null => no hubo error):",  messageValid)
     if (messageValid) {
         res.status(400).json({ message: messageValid})
         return
@@ -42,7 +42,7 @@ const createPedido = async (req, res, next) => {
     try {
         // Salvando la nueva entidad de Pedido
         newPed2 = await newPedido.save();
-        // res.send(newPed2); //todavia no respondo
+        // res.send(newPed2); //todavia no respondo al request lo hago al final
     } catch (err) {
         res.statusCode = 500;
         res.send(err);
@@ -52,51 +52,68 @@ const createPedido = async (req, res, next) => {
     console.log (".Procedo a Guardar Lineas Pedidos para el idPedido ----> " , newPed2.idPedido, " <----")
     try {
         // Salvando la nueva entidad Liena Pedido
-        // pedBody.lineasPedido.forEach(lineaPed => {
-        console.log(".Muestro lenght de arreglo lineasPedido ",  pedBody.lineasPedido.length);
+        // pedBody.lineasPedido.forEach(lineaPed => { //forEach no funca con await
         i = 0;
         do {
              //construyo lineaPedido
-             console.log (".Estoy construyendo newLinea de Pedido");
+             console.log (".ATENCION Estoy construyendo newLinea de Pedido");
+             
+             console.log(".ATENCION MUESTROOOO los datos agregados al Body: Precio Unitario -->",   
+             pedBody.lineasPedido[i].PrecioUnit, " Importe: -> ", 
+             pedBody.lineasPedido[i].importe, " cantidad ya del body: -> ", 
+             pedBody.lineasPedido[i].cantidad, ", e importe con IVA: -> ", 
+             pedBody.lineasPedido[i].importeConIVA  )
 
              let newLinea = new Pedido.LineaPedido(
                  newPed2.idPedido, 
                  pedBody.lineasPedido[i].codProd, 
                  pedBody.lineasPedido[i].cantidad, 
-                 1750, 
-                 pedBody.lineasPedido[i].cantidad * 1750, 
-                 pedBody.lineasPedido[i].cantidad * 1750,
+                 pedBody.lineasPedido[i].PrecioUnit, 
+                 pedBody.lineasPedido[i].importe, 
+                 pedBody.lineasPedido[i].importeConIVA,
                 "")
-             //salvo linea
+             //salvo Linea del Pedido
              newLinea2 = await newLinea.save();
-             
              console.log (".Se guardo LineaPedido en la DB --> ", newLinea2)
+            
+             //Itero los detalles (gustos) de la linea del peido y doy de Alta
+             j= 0 ;
+             do {
+                //Invariante Alta por cada Gusto de la linea del pedidos en ttPedidosLineasDetalle
+                let newDetalle = new Pedido.LineaPedidoDetalle( 
+                    newLinea2.idLinea, 
+                    pedBody.lineasPedido[i].detalles[j].codGusto,
+                    pedBody.lineasPedido[i].detalles[j].cantGusto
+                )
+                //salvo Detalle de la Linea del Pedido
+                newDetalle2 = await newDetalle.save()
+                console.log("Se guardó el Detalle en la Línae del Pedido en la DB --> ",  newDetalle2) 
 
-             //FALTA ITERAR LOS GUSTOS DE LA LINEA
+                //Avanzo próximo gusto de la linea
+                j++
+             } while (j < pedBody.lineasPedido[i].detalles.length);
 
-            //avanzo
-            console.log(`Numero: ${i}`);
+            //Fin de Inveriante del fin del fin de la iteración
+             console.log(`Fin Iteración Numero: ${(i +1)}`);
+
+            //avanzo próxima linea de Pedido
             i++;
 
         } while (i < pedBody.lineasPedido.length);
 
-           
-        //CORTO PARA PROBAR y Ver Consola
-        res.status(401).send("LO CORTO PARA PROBAR ==================" );
-        return;
-           
-        // });
+        //Si llego acá ==> Alta de Pedido Exitosa
+        console.log (". SE TERMINÓ DE GUARDAR TODO EL PEDIDO EN LA DB")
+
+        res.status(200).json({"message": "Operación Exitosa: Alta de Pedido en DB"})
+
+        // //CORTO PARA PROBAR y Ver Consola
+        // res.status(401).send("LO CORTO PARA PROBAR ==================" );
+        // return;
     
     } catch (err) {
-    res.statusCode = 500;
-    res.send(err);
+        res.statusCode = 500;
+        res.send(err);
     }  
-
-    // res.send(newPed2); //todavia no respondo
-
-   
-
-
 };
 
 
@@ -111,7 +128,7 @@ const getById = async (req, res, next) => {
     }
     
     //Voy a Buscar el Pedido paraya tenerlo, para saber si existe y si tiene permiso para consultarlo de acuerdo a userId pertenece
-    const pedidoFinded  = await Pedido.getById(req.params.idPedido);
+    const pedidoFinded  = await Pedido.Pedido.getById(req.params.idPedido);
     if (!pedidoFinded) { 
         res.statusCode = 400;
         res.send("No existe un Pedido con este idPedido.");
@@ -131,7 +148,7 @@ const getById = async (req, res, next) => {
         res.send("No existe un Pedido con este idPedido.");
         return;
     };
-//    const pedidoFinded  = await Pedido.getById(req.params.idPedido);
+//    const pedidoFinded  = await Pedido.Pedido.getById(req.params.idPedido);
    
     res.send(pedidoFinded)
 };
@@ -139,7 +156,7 @@ const getById = async (req, res, next) => {
 const getAllPedidosPorAsignar = async (req, res, next) => {
 //Los permisos solo en el Controler: Solo ADMIN
     console.log ("Va a buscar los Pedidos Por Asignar solo para ADMIN---> ")
-    const allPedidosXAsign  = await Pedido.getAllPedidosPorAsignar();
+    const allPedidosXAsign  = await Pedido.Pedido.getAllPedidosPorAsignar();
     // console.log("Response user", users);
     res.send(allPedidosXAsign)
 };
@@ -147,7 +164,7 @@ const getAllPedidosPorAsignar = async (req, res, next) => {
 const getAllPedidosAsignadosPorEntregar = async (req, res, next) => {
 //Los permisos solo en el Controler: Solo ADMIN
     console.log ("Va a buscar los Pedidos Por Asigndos Por Entrear solo para ADMIN---> ")
-    const allPedidosXAsign  = await Pedido.getAllPedidosAsignadosPorEntregar();
+    const allPedidosXAsign  = await Pedido.Pedido.getAllPedidosAsignadosPorEntregar();
     // console.log("Response user", users);
     res.send(allPedidosXAsign)
 };
@@ -166,7 +183,7 @@ const cancelPedidoByIdByUs = async (req, res, next) => {
     }
 
     //Voy a Buscar el Pedido paraya tenerlo, para saber si existe y si tiene permiso para consultarlo de acuerdo a userId pertenece
-    const pedidoFinded  = await Pedido.getById(req.params.idPedido);
+    const pedidoFinded  = await Pedido.Pedido.getById(req.params.idPedido);
     if (!pedidoFinded) { 
         res.statusCode = 400;
         res.send("No existe un Pedido con este idPedido.");
@@ -181,7 +198,7 @@ const cancelPedidoByIdByUs = async (req, res, next) => {
     }
     //Fin Evaluación de Permisos -------------------------------------
 
-    const pedidoCanceled = await Pedido.cancelPedidoByIdByUs(req.params.idPedido, req.body.motivoCancelUs );
+    const pedidoCanceled = await Pedido.Pedido.cancelPedidoByIdByUs(req.params.idPedido, req.body.motivoCancelUs );
 
     res.send(pedidoCanceled);  
 }
@@ -204,7 +221,7 @@ const cancelPedidoByIdByHel = async (req, res, next) => {
         res.send("No existe un Pedido con este idPedido.");
         return;
     };
-    const pedidoCanceled = await Pedido.cancelPedidoByIdByHel(req.params.idPedido, req.body.motivoCancelHel );
+    const pedidoCanceled = await Pedido.Pedido.cancelPedidoByIdByHel(req.params.idPedido, req.body.motivoCancelHel );
     //Si llego acá Canceló Exitosamente el Pedido By Heladería
     res.statusCode = 200;
     res.send(pedidoCanceled);  
@@ -258,7 +275,7 @@ const asignarPedidoACadeteById = async (req, res, next) => {
         // return;
 
         //Mando al Model a hacer el UPDADE de la Asginación del Pedido al Cadete
-        const pedidoAsignCadete = await Pedido.asignarPedidoACadeteById(
+        const pedidoAsignCadete = await Pedido.Pedido.asignarPedidoACadeteById(
             req.params.idPedido, 
             ldFecHsEstimArr.toISOString(), 
             req.body.idUserCadete, 
@@ -290,7 +307,7 @@ const entregaDePedidoById = async (req, res, next) => {
         return;
     }
     //Busco el pedido para Validaciones:
-    const pedidoFinded = await Pedido.getById(req.params.idPedido);
+    const pedidoFinded = await Pedido.Pedido.getById(req.params.idPedido);
     console.log(".El Pedido Encontrado pasado por el req.params: --> " , pedidoFinded)
     if (!pedidoFinded) { 
         res.status(400).send("No Existe un Pedido con este idPedido.");
@@ -309,7 +326,7 @@ const entregaDePedidoById = async (req, res, next) => {
         return;
     };
 
-    const pedidoEntregado = await Pedido.entregaDePedidoById(req.params.idPedido );
+    const pedidoEntregado = await Pedido.Pedido.entregaDePedidoById(req.params.idPedido );
     console.log("pedidoEntregado : ", pedidoEntregado);
     res.send(pedidoEntregado)
 };
@@ -318,7 +335,7 @@ const entregaDePedidoById = async (req, res, next) => {
 // Validaciones -------------------------------------------------------------
 
 const idPedidoDoseExist = async (idPedido) => {
-    const pedidoById = await Pedido.getById(idPedido);
+    const pedidoById = await Pedido.Pedido.getById(idPedido);
     console.log ("Encontrado ", pedidoById)
     if (pedidoById) {
         return true
@@ -407,22 +424,27 @@ const MessageNotPassValidationCreate = async (pedBody) => {
         return "El Total del Pedido no puede estar vacío.";
     }
 
-    console.log (".Muestra LINEAS_Pedido: " , pedBody.lineasPedido)
+    console.log (".Muestra LINEAS_Pedido del Body: 'pedBody.lineasPedido':-->  " , pedBody.lineasPedido)
     // console.log (pedBody.lineasPedido)
     let liNroLinea = 0
     //Valido integridad de Lineas --------------------
-    pedBody.lineasPedido.forEach(linea => {
+    //Recorro las lineas del Pedido del Body:  el  //El forEach no funca con await
+    do {    
         //valido Linea
-        // let prodFinded = await Producto.findByCod(linea.codProd);
-        // if (!prodFinded) {
-        //     return "El codProducto '" + linea.codProd + "' de la línea de Pedido Nro. '" + liNroLinea + "' no Existe.";
-        // } else {
+        //Busco producto para ver si existe
+        let prodFinded = await Producto.findByCod(pedBody.lineasPedido[liNroLinea].codProd);
+        if (!prodFinded) {
+            return "El codProducto '" +  pedBody.lineasPedido[liNroLinea].codProd + "' de la línea de Pedido Nro. '" + (liNroLinea + 1) + "' no Existe.";
+        } else {
             //agrego datos a la linea del Pedido
-            // linea.PrecioUnit = prodFinded.precioUnitFinal
-            linea.PrecioUnit = 1750
-            linea.importe = linea.cantidad * linea.PrecioUnit
-            linea.importeConIVA =  linea.cantidad * linea.importe
+            //el PrecioUnit de la linea  = prodFinded.precioUnitFinal
+            pedBody.lineasPedido[liNroLinea].PrecioUnit = prodFinded.precioUnitFinal
+            pedBody.lineasPedido[liNroLinea].importe = pedBody.lineasPedido[liNroLinea].cantidad * pedBody.lineasPedido[liNroLinea].PrecioUnit
+            pedBody.lineasPedido[liNroLinea].importeConIVA =  pedBody.lineasPedido[liNroLinea].importe
+
+            console.log(".MUESTROOOO los datos agregados al Body: Precio Unitario -->",   pedBody.lineasPedido[liNroLinea].PrecioUnit, " Importe: -> ", pedBody.lineasPedido[liNroLinea].importe, " cantidad ya del body: -> ", pedBody.lineasPedido[liNroLinea].cantidad, ", e importe con IVA: -> ", pedBody.lineasPedido[liNroLinea].importeConIVA  )
         // }
+        //Falta ver si lo quiero validar para evitar hacking
         //valido DetalleLinea Recorro y valido el detalle
         // linea.detalles.forEach(gusto => {
         //     const gustoFinded = await Gusto.findByCod(gusto.codGusto);
@@ -432,14 +454,19 @@ const MessageNotPassValidationCreate = async (pedBody) => {
         //         //no hago nada: no hay que agrear datos.
         //     }
         // }); //Fin Recorrido de Detalles Linea
-        console.log(".Muestro LINEA del PEDIDO QUE SE VA CONFORMANDO: --> " + linea )
-    }); //Fin Recorrido de Lineas
+        }
+        console.log(".Muestro LINEA del PEDIDO QUE SE VA CONFORMANDO: --> ", pedBody.lineasPedido[liNroLinea].detalles )
+       
+        //Avanzo
+        liNroLinea++
+    } while (liNroLinea < pedBody.lineasPedido.length)
+    //Fin Recorrido de Lineas
     
     // Se acuercada el Front Sabe como mandarlos y el front lo validará
 
     //Si llego acá no hay mensajes de validación de Registro
     return null
-};
+}
 
 //req.user.role, req.user.userId, pedidoFinded))
 const usuarioTienePermisoConsultarPP = (userRoleToken, userIdToken, pedidoFinded ) => {

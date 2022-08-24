@@ -156,11 +156,11 @@ const updateByEmail = async (req, res, next) => {
 
 
 //# Testeado el 15/08/22 --> ok
-const deleteByEmail = async(req, res, next) => {
+const bajaUserByEmail = async(req, res, next) => {
 //VC: Baja Logica, no borro para no perder integridad referencial
 //1ero Updateo en Heroku.PostgreSQL y 2do en Atalas.Mongo, si la hubiera
    
-    console.log("Entro función deleteByEmail --------> ", req.params.email , "El usuario logueado tiene: ", req.user.role, " , email: ", req.user.email)
+    console.log("Entro función bajaUserByEmail --------> ", req.params.email , "El usuario logueado tiene: ", req.user.role, " , email: ", req.user.email)
 
     //Validaciones Previas 
     if (req.params.email === "") {
@@ -186,13 +186,13 @@ const deleteByEmail = async(req, res, next) => {
 
     try {
         //1ero Borro sobre PostgreSQL
-        const userDeleted1 = await User.deleteByEmail(req.params.email);
-        if (userDeleted1) {
-            console.log ("Si llego acá desactivó bien User over PostgreSQL.User ", userDeleted1)
+        const userDeactivate1 = await User.bajaUserByEmail(req.params.email);
+        if (userDeactivate1) {
+            console.log ("Si llego acá desactivó bien User over PostgreSQL.User ", userDeactivate1)
            
             // res.json("Deleted user OK in Heroku.PostgreSQL.User by email: '" + req.params.email + "'." );
 
-            res.status(200).json({ message: "User deactivated OK in Heroku.PostgreSQL.User by email: '" + req.params.email + "'." , userDeleted: userDeleted1 });
+            res.status(200).json({ message: "User deactivated OK in Heroku.PostgreSQL.User by email: '" + req.params.email + "'." , userDeactivated: userDeactivate1 });
 
             return;
 
@@ -204,7 +204,53 @@ const deleteByEmail = async(req, res, next) => {
     }            
 }
 
-
+//# Testeado el 15/08/22 --> ok
+const activateUserByEmail = async(req, res, next) => {
+    //VC: Activación Logica, no se borra para no perder integridad referencial
+       
+        console.log("Entro función activateUserByEmail --------> ", req.params.email , "El usuario logueado tiene: ", req.user.role, " , email: ", req.user.email)
+    
+        //Validaciones Previas 
+        if (req.params.email === "") {
+            res.statusCode = 400;
+            res.send("Eamil no puede estar vacío.");
+            return;
+        }
+        //Veo de Permisos si puedo o no: ADMIN puede siempre, USER solo su usuario: ------------------------------
+        if (!usuarioTienePermisoParaUpdate(req.user.role, req.user.userId, req.user.email, req.params.email )) {
+            //Salgo El mensaje send ya salio en la funcion de arriba
+            res.status(401).json(moMensajeRes)
+            return
+        }
+        //Fin Evaluación de Permisos -------------------------------------
+    
+        //Sino existe el usuario
+        if (await userDosentExist(req.params.email)) { 
+            console.log("--> Entrando a buscar si existe el email a borrar")
+            res.statusCode = 400;
+            res.send("No existe ningún usuario con este email.");
+            return;
+        };
+    
+        try {
+            //1ero Borro sobre PostgreSQL
+            const userActivated1 = await User.activateUserByEmail(req.params.email);
+            if (userActivated1) {
+                console.log ("Si llego acá Activó bien la cuenta del User over PostgreSQL.User ", userActivated1)
+               
+                // res.json("Deleted user OK in Heroku.PostgreSQL.User by email: '" + req.params.email + "'." );
+    
+                res.status(200).json({ message: "User Activated OK in Heroku.PostgreSQL.User by email: '" + req.params.email + "'." , userActivated: userActivated1 });
+    
+                return;
+    
+            } else {
+                res.status(500).json({ message: error.message + ". Call and tell the Admin Role that the Activation has not done properly for email '" + req.params.email + "' over PostgreSQL.User"}); 
+            }
+        } catch (error) {
+            res.status(500).json({ message: error.message + ". Call and tell the Admin Role that Activation has not done properly for email '" + req.params.email + "'" });    
+        }            
+    }
 
 //Validaciones -------------------------------------
 
@@ -309,5 +355,6 @@ module.exports = {
     getAllUsers,
     findUserByEmail,
     updateByEmail,
-    deleteByEmail,
+    bajaUserByEmail,
+    activateUserByEmail,
 };

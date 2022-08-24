@@ -33,13 +33,19 @@ router.get("/search", auth.authorizationForAdmin, usersController.findUserByEmai
 router.put("/email/:email", auth.authorizationForAllUser, usersController.updateByEmail)
 //  en el controller tendré que tomarlo con un  req.params.email
 
-// Baja de Usuario:
+// Baja de Usuario (Baja logica):
 // /api/users/email/roberto5@gmail.com
 // Para ADMIN
 // Para el usuario que modifique sus datos
-router.delete("/email/:email", auth.authorizationForAllUser, usersController.deleteByEmail)
+router.put("/baja/email/:email", auth.authorizationForAllUser, usersController.bajaUserByEmail)
 //  en el controller tendré que tomarlo con un  req.params.email
 
+// Activar Cuenta  de Usuario (activación logica):
+// /api/users/email/roberto5@gmail.com
+// Para ADMIN
+// Para el usuario que modifique sus datos
+router.put("/activate/email/:email", auth.authorizationForAllUser, usersController.activateUserByEmail)
+//  en el controller tendré que tomarlo con un  req.params.email
 
 // otras rutas ..
 
