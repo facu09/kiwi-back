@@ -69,7 +69,7 @@ const authorizationForAllUser = async ( req, res, next) => {
             res.status(403).json({ message: "Not authorized: must be 'ADMIN' or 'USER'" });
             return;
         }
-        // si es ADMIN o USER
+        // si es ADMIN o USER o CADETE
         //     -> agrego al req. un objeto user para que quede y pueda filtrar en la consulta y demas contollers como gastos
         req.user = {
             userId: data.id,

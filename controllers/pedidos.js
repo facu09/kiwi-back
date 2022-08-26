@@ -243,10 +243,25 @@ const asignarPedidoACadeteById = async (req, res, next) => {
             res.status(401).send("idPedido no puede estar vacío.");
             return;
         }
-        if (!await idPedidoDoseExist(req.params.idPedido)) { 
+        //Busco el pedido para validar que exista y sus estados para ver si es momento de Asignar a cadete
+        const elPedido = await Pedido.Pedido.getById(req.params.idPedido)
+        console.log (".El Pedido es este: --> ", elPedido)
+        if (!elPedido) {
             res.status(401).send("No existe un Pedido con este idPedido.");
             return;
         };
+        if (elPedido.xAsingadoCadete==="X"){
+            res.status(401).send("El Pedido ya está asignado a un cadete, no puede volver asignarse.");
+            return;
+        }
+        if (elPedido.xEntregado==="X"){
+            res.status(401).send("El Pedido ya esta marcado como 'Entregado' no pude asignarse a un cadete.");
+            return;
+        }
+        if (elPedido.canceladoXUs || elPedido.canceladoXHel){
+            res.status(401).send("El Pedido figura como 'Cancelado', no puede asignarse a un Cadete.");
+            return;
+        }
         if (!req.body.idUserCadete) {
             res.status(401).send("El 'idUserCadete' al que se le asigna el pedido no puede ser vacío.");
             return;
@@ -296,8 +311,10 @@ const asignarPedidoACadeteById = async (req, res, next) => {
 
 const entregaDePedidoById = async (req, res, next) => {
 //Los permisos solo evaluados en la Ruta: Solo ADMIN o CADETE
-//VC: sin importar el estado del pedido se marca como Entrega:
-//       podria haberse retirado por mostrador y no asignado a Cadete x ejemplpo (enntonces no sería necesario validar si se asginó a cadete o no.==> entra pollo sale pollo)
+//VC: sin importar el estado del pedido se marca como Entregado:
+//       podria haberse retirado por mostrador y no asignado a Cadete x ejemplpo (entonces no sería necesario validar si se asginó a cadete o no.==> entra pollo sale pollo)
+//    Si valido que no esté cancelado el pedido
+//    Y valido que si lo cancela un Cadete que sea el cadete que lo tenía asignado.
     console.log("---> entró al entregaDePedidoById");
     console.log("idPedido: " + req.params.idPedido + ".")
     //Validación previa
@@ -310,7 +327,7 @@ const entregaDePedidoById = async (req, res, next) => {
     const pedidoFinded = await Pedido.Pedido.getById(req.params.idPedido);
     console.log(".El Pedido Encontrado pasado por el req.params: --> " , pedidoFinded)
     if (!pedidoFinded) { 
-        res.status(400).send("No Existe un Pedido con este idPedido.");
+        res.status(400).send("No Existe un Pedido con este 'idPedido'.");
         return;
     };
     if (pedidoFinded.xEntregado) { 
@@ -325,6 +342,11 @@ const entregaDePedidoById = async (req, res, next) => {
         res.status(400).send("El Pedido '" + req.params.idPedido + "' está marcado 'X' como Cancelado por la Heladería expresando el motivo de '" + pedidoFinded.motivoCancelHel + "'." );
         return;
     };
+    //si el pedido está asignado a un cadete <> del que se logueó
+    if (pedidoFinded.idUserCadete !== req.user.userId) {
+        res.status(400).send("El Pedido '" + req.params.idPedido + "' está asignado al cadete '" + pedidoFinded.nomCadete + "', él o algún usuario con Role de ADMIN podrán marca este pedio como Entregado.  El cadete '" + req.user. email+ "' no está autorizado a marcarlo como Entregado a este Pedido." );
+        return;
+    }
 
     const pedidoEntregado = await Pedido.Pedido.entregaDePedidoById(req.params.idPedido );
     console.log("pedidoEntregado : ", pedidoEntregado);
