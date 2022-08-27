@@ -10,7 +10,7 @@ console.log("antes de entrar al route /api/gustos")
 //   -->  /api/gustos
 // Solo para ADMIN
 router.post("/", auth.authorizationForAdmin, gustosController.createGusto);
-// Esto genera un alta en DB.PostgreSQL en entidad/Tabla ttGustos
+// Esto genera un alta en DB.PostgreSQL en entidad/Tabla ttGustos.
 
 //   -->  /api/gustos
 // Publica
