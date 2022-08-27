@@ -15,7 +15,7 @@ router.post("/", auth.authorizationForAdmin, gustosController.createGusto);
 //   -->  /api/gustos
 // Publica
 router.get("/", gustosController.getAllGustos)
-// Esto trae un json {} con todos los gustos disponibles en la tabla ttGustos
+// Esto trae un json {} con todos los gustos disponibles en la tabla ttGustos.
 
 //  --> /api/gustos/id/:id
 // Solo para ADMIN
