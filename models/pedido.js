@@ -264,3 +264,4 @@ module.exports = {
 } ;
 //Aprendizaje: ahora en el controller voy a tener que invocar asi: --> 
 // new Pedido.Pedido(...) para construir.
+// LPM

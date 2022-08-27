@@ -1,13 +1,13 @@
-require('dotenv').config()  //es para poder usar el Process.env
+require('dotenv').config(); //es para poder usar el Process.env
 const express = require("express");
 // const connectMongoDB = require("./utils/clientMongo").connectMongoDB;
 const bodyParser= require("body-parser");
 
-const usersRouter = require("./routes/users")
+const usersRouter = require("./routes/users");
 const authRouter = require("./routes/auth");
 const gustosRouter = require("./routes/gustos");
 const productosRouter = require("./routes/productos");
-const pedidosRouter = require("./routes/pedidos")
+const pedidosRouter = require("./routes/pedidos");
 // const consultasRouter = require("./routes/consultas");
 // const gastosRouter = require("./routes/gastos");
 
