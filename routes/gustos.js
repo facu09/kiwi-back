@@ -20,7 +20,7 @@ router.get("/", gustosController.getAllGustos)
 //  --> /api/gustos/id/:id
 // Solo para ADMIN
 router.put("/codGusto/:codGusto", auth.authorizationForAdmin ,gustosController.updateByCod)
-// Esto actualiza el gusto por el codGusto
+// Esto actualiza el gusto por el codGusto.
 
 
 //  --> /api/gustos/codGusto/:codGusto
