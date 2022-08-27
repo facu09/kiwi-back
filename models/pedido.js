@@ -1,5 +1,5 @@
 const prisma = require("../utils/clientPrismaPostgre");
-const XDate = require("XDate");
+const XDate = require("xdate");
 
 const { v4: uuidv4 } = require("uuid");
 

@@ -4,7 +4,7 @@ const User = require("../models/user");
 const Producto = require("../models/producto");
 const Gusto = require("../models/gusto");
 
-const XDate = require("XDate");
+const XDate = require("xdate");
 
 let moMensajeRes = {};  // creo variable global tipo objeto a nivel de modulo para pasar los mensajes de Res
 let msNomCadete = "" //variable a nivel de modulo para pasar entre funciones
