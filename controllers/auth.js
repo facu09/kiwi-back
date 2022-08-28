@@ -108,7 +108,7 @@ const loginUser = async (req, res, next) => {
                     { expiresIn: 60 * 60 * 12} //son 12 hora
                     
                 );
-                res.json({ accessToken: accessToken });
+                res.json({ token: accessToken });
                 return;
             } 
         }
