@@ -19,8 +19,8 @@ router.get("/", auth.authorizationForAdmin, usersController.getAllUsers);
 
 //Busqueda por email:
 // /api/users/search?email=roberto5@gmail.com
-// Solo para ADMIN (xque no se va a usar)
-router.get("/search", auth.authorizationForAdmin, usersController.findUserByEmail)
+// Para todos los usuario (van a buscar sus datos)
+router.get("/search", auth.authorizationForAllUser, usersController.findUserByEmail)
 // en el controller tendré que tomarlo con un req.query.email
 // .. como un ejemplo para que quede aca, si quisiera ingresar mas de un campo en la url, seria asi
 //      // /api/users/search?email=roberto5@gmail.com&name=Roberto Garcia

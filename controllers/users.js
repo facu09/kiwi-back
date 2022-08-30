@@ -56,7 +56,9 @@ const getAllUsers = async (req, res, next) => {
 //# Testeado el 15/08/22
 // /api/users/search?email=roberto5@gmail.com&name=Roberto
 const findUserByEmail = async (req, res, next) => {
-    // console.log("----> entrando a findUserByEmail")
+    console.log(".----> entrando a findUserByEmail")
+    console.log(". El req.query.email es: ", req.query.email);
+
     if (req.query.email === "") {
         res.statusCode = 400;
         res.send("Eamil cannot be empty")

@@ -199,7 +199,7 @@ class LineaPedido {
 async save() {
   try {
       console.log (".Entro al Save de la Linea Pedido")
-      console.log (this.idPedido+ ", " +
+      console.log (this.idPedido + ", " +
           this.codProd + ", " +
           this.cantidad + ", " +
           this.precioUnit + ", " +
@@ -208,7 +208,7 @@ async save() {
           this.dscLinea + ".")
       const newLinea = await prisma.ttPedidosLineas.create({
           data: {
-              idPedido : this.idPedido,
+              idPedido: this.idPedido,
               codProd: this.codProd,
               cantidad: this.cantidad,
               precioUnit: this.precioUnit,

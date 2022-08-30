@@ -68,19 +68,25 @@ const loginUser = async (req, res, next) => {
         //Authenticate -------------------
         const userBody = req.body;
 
+        console.log(". LoginUser: muestro el req.body", req.body)
+        console.log ("Muestro email:", userBody.email, " And Password: ", userBody.password)
+
+
         //Validaciones Previas --------
-        if (userBody.email === "") {
+        if (userBody.email === "" || userBody.email === undefined) {
             res.statusCode = 400;
+            console.log("Esta cortando por la validación de que no puede estar vacio el email")
             res.send("El email no puede estar vacío.");
             return;
         };
-        if (userBody.password === "" ) {
+        if (userBody.password === "" || userBody.password === undefined ) {
             res.statusCode = 400;
             res.send("La Contraseña no puede estar vacía.");
             return;
         };
         //Fin validaciones previas -------------
         
+        console.log("Paso validacione")
         //Busco en Usuario x Email en orden: 1ero Mongo, y luego backup redundante Heroku.PostgreSQL
         const { user, IdUserPostgre } = await searchUserByEmail(userBody.email);
         console.log("Loguin: -> Usuario encontrado: ",   user );

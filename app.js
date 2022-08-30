@@ -1,6 +1,8 @@
 require('dotenv').config(); //es para poder usar el Process.env
 const express = require("express");
 // const connectMongoDB = require("./utils/clientMongo").connectMongoDB;
+var cors = require('cors')
+
 const bodyParser= require("body-parser");
 
 const usersRouter = require("./routes/users");
@@ -19,6 +21,9 @@ const PORT = process.env.PORT || 3000;
 
 const app = express();
 app.use(bodyParser.json());
+
+//Para resolver  problemas de CORS en el kiwi-front
+app.use(cors()) // Use this after the variable declaration
 
 //ataja todas las rutas que arranquen con "api/auth" --> y las tira al /routes/auth.js
 app.use("/api/auth", authRouter );

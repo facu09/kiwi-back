@@ -39,13 +39,13 @@ class User {
 
   static async findByEmail(email) {
     try {
-        // console.log("el mail recibido en findByEmail", email)
+        console.log(". En el model: en findeByEmail. El mail recibido en findByEmail es: ", email)
         const userfinded = await prisma.User.findUnique({
           where: {
             email: email,
           },
         })
-        console.log("findByEmail: el userfinded: " ,userfinded)
+        console.log(".So: findByEmail: el userfinded: " ,userfinded)
         return userfinded;
     
     } catch (error) {
