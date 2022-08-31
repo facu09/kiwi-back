@@ -1,0 +1,779 @@
+{
+	"info": {
+		"_postman_id": "c9b9890f-db69-4f66-82be-9586e4860176",
+		"name": "TpFinalFinal_KiwiBackEnd _s/Var",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17226216"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"roberto06@mailinator.com\",\r\n    \"name\": \"Seis Roberto Garcia\",\r\n    \"password\": \"pass12345\",\r\n    \"role\": \"USER\",\r\n    \"domicilio\": \"Roca 606 Piso 6 - Depto 06\", \r\n    \"mobbile\": \"+54 9 342 404 9567\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/auth/register",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"fcigliuti@mailinator.com\",\r\n    \"password\": \"pass12345\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/auth/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "New User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwibmFtZSI6IlVubyBSb2JlcnRvIEdhcmNpYSIsImVtYWlsIjoicm9iZXJ0bzAxQG1haWxpbmF0b3IuY29tIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE2NjExMTU5MTUsImV4cCI6MTY2MTEyMTMxNX0.asEONupxLGtn1EST77UfQqnF964QVSlvqD31GWCuO24",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"jhony03@mailinator.com\",\r\n    \"name\": \"TRES Jhony Pérez\",\r\n    \"password\": \"pass12345\",\r\n    \"role\": \"CADETE\",\r\n    \"domicilio\": \"Jose Ingeniero  303 Depto 03 \", \r\n    \"mobbile\": \"+54 9 342 4 049 567\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "All Users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkZhY3VuZG8gQ2lnbGl1dGkiLCJlbWFpbCI6ImZjaWdsaXV0aUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE2NjExMDQ0MTEsImV4cCI6MTY2MTEwOTgxMX0.KuacLejj0q3JxI1aPhBxMYtEQKUXfZq1p8bzLhs1bqk",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Find By Email",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkZhY3VuZG8gQ2lnbGl1dGkiLCJlbWFpbCI6ImZjaWdsaXV0aUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE2NjExMDQ0MTEsImV4cCI6MTY2MTEwOTgxMX0.KuacLejj0q3JxI1aPhBxMYtEQKUXfZq1p8bzLhs1bqk",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/users/search?email=roberto01@mailinator.com",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								"search"
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": "roberto01@mailinator.com"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Update by Email",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkZhY3VuZG8gQ2lnbGl1dGkiLCJlbWFpbCI6ImZjaWdsaXV0aUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE2NjExMTYyMTIsImV4cCI6MTY2MTEyMTYxMn0.btaGVMOKRzPVLik6EQyTx1j1qXnpWC8GRK2sQpasaK0",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"CINCO Robert García\",\r\n    \"password\": \"pass12345\",\r\n    \"domicilio\": \"Roca 555 5TO Depot 05\", \r\n    \"mobbile\": \"+54 9 342 407 9567\"\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/users/email/roberto05@mailinator.com",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								"email",
+								"roberto05@mailinator.com"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Baja User by Email",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkZhY3VuZG8gQ2lnbGl1dGkiLCJlbWFpbCI6ImZjaWdsaXV0aUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJkb21pY2lsaW8iOiJSb2NhIDg5MCBEZXB0byAwMyIsIm1vYmJpbGUiOiIrNTQgOSAzNDIgNDA0IDk1NjciLCJpYXQiOjE2NjEzODIzMzksImV4cCI6MTY2MTQyNTUzOX0.x2J-fv3lk5xFYcOfC38pnFSB38KfUtc4pS1NlE8kW4c",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/users/baja/email/roberto02@mailinator.com",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								"baja",
+								"email",
+								"roberto02@mailinator.com"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Activar Cuenta by Email Copy",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkZhY3VuZG8gQ2lnbGl1dGkiLCJlbWFpbCI6ImZjaWdsaXV0aUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJkb21pY2lsaW8iOiJSb2NhIDg5MCBEZXB0byAwMyIsIm1vYmJpbGUiOiIrNTQgOSAzNDIgNDA0IDk1NjciLCJpYXQiOjE2NjEzODIzMzksImV4cCI6MTY2MTQyNTUzOX0.x2J-fv3lk5xFYcOfC38pnFSB38KfUtc4pS1NlE8kW4c",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/users/activate/email/roberto02@mailinator.com",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								"activate",
+								"email",
+								"roberto02@mailinator.com"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Gustos",
+			"item": [
+				{
+					"name": "New Gusto",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkZhY3VuZG8gQ2lnbGl1dGkiLCJlbWFpbCI6ImZjaWdsaXV0aUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE2NjEwOTY3MjgsImV4cCI6MTY2MTEwMjEyOH0.wMlB0n7pNqc9zjkmku5GkI3inY_ILVVPnTRIhFjq-JY",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"codGusto\": 104,\r\n    \"nombreGusto\": \"Crema marmolada\",\r\n    \"dscGusto\": \"Crema marmolada de la casa.\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/gustos",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"gustos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "All Gustos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/tiposGastos",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"tiposGastos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update by codGusto",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkZhY3VuZG8gQ2lnbGl1dGkiLCJlbWFpbCI6ImZjaWdsaXV0aUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE2NjEwOTY3MjgsImV4cCI6MTY2MTEwMjEyOH0.wMlB0n7pNqc9zjkmku5GkI3inY_ILVVPnTRIhFjq-JY",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nombreGusto\": \"Crema marmolada (New Gusto)\",\r\n    \"dscGusto\": \"Crema Marmolada (probalo y despues contame)\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/gustos/codGusto/105",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"gustos",
+								"codGusto",
+								"105"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete by Code Gusto",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkZhY3VuZG8gQ2lnbGl1dGkiLCJlbWFpbCI6ImZjaWdsaXV0aUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE2NjEwOTY3MjgsImV4cCI6MTY2MTEwMjEyOH0.wMlB0n7pNqc9zjkmku5GkI3inY_ILVVPnTRIhFjq-JY",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/gustos/codGusto/104",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"gustos",
+								"codGusto",
+								"104"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Productos",
+			"item": [
+				{
+					"name": "New Product",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkZhY3VuZG8gQ2lnbGl1dGkiLCJlbWFpbCI6ImZjaWdsaXV0aUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE2NjEwOTY3MjgsImV4cCI6MTY2MTEwMjEyOH0.wMlB0n7pNqc9zjkmku5GkI3inY_ILVVPnTRIhFjq-JY",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"codProd\": \"334\",\r\n    \"nomProd\": \"Promo Kilo de Dulce de Leche Repostero\",\r\n    \"dscProd\": \"Promoción hasta el 10/Set/22.\",\r\n    \"unidad\": \"unidad\",\r\n    \"precioUnitFinal\": 1800,\r\n    \"foto\": \"falta foto\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/productos",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"productos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "All Productos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/productos",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"productos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get By Code Producto",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/productos/codProd/331",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"productos",
+								"codProd",
+								"331"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update by Code Producto",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkZhY3VuZG8gQ2lnbGl1dGkiLCJlbWFpbCI6ImZjaWdsaXV0aUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE2NjEwOTY3MjgsImV4cCI6MTY2MTEwMjEyOH0.wMlB0n7pNqc9zjkmku5GkI3inY_ILVVPnTRIhFjq-JY",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nomProd\": \"Promo kILAZO chocolate y Limon\",\r\n    \"dscProd\": \"Promoción KILAZO hasta el 01/Set/22.\",\r\n    \"unidad\": \"unidades\",\r\n    \"precioUnitFinal\": \"3000\",\r\n    \"foto\": \"falta foto.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/productos/codProd/333",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"productos",
+								"codProd",
+								"333"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete by Code Producto",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkZhY3VuZG8gQ2lnbGl1dGkiLCJlbWFpbCI6ImZjaWdsaXV0aUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJkb21pY2lsaW8iOiJSb2NhIDg5MCBEZXB0byAwMyIsIm1vYmJpbGUiOiIrNTQgOSAzNDIgNDA0IDk1NjciLCJpYXQiOjE2NjExNzgxNDUsImV4cCI6MTY2MTE4MzU0NX0.bvE-PCHBFgdVrpzTA8kM9y7YeOU7om2TxQPdTTL9RAg",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/productos/codProd/333",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"productos",
+								"codProd",
+								"333"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Pedidos",
+			"item": [
+				{
+					"name": "New Pedido",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwibmFtZSI6IkN1YXRybyBSb2JlcnRvIEdhcmNpYSIsImVtYWlsIjoicm9iZXJ0bzA0QG1haWxpbmF0b3IuY29tIiwicm9sZSI6IlVTRVIiLCJkb21pY2lsaW8iOiJSb2NhIDQwMCBEZXB0byAwNCIsIm1vYmJpbGUiOiIrNTQgOSAzNDIgNDA0IDk1NjciLCJpYXQiOjE2NjEzOTAxODEsImV4cCI6MTY2MTQzMzM4MX0.bpC2SkPZsXYW4XaCC1czgf1wIvfu_nUW5smjtW-QI5E",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"domicilio\": \"Roca 404 Piso 4to depto 04\",\r\n    \"mobbile\": \"342 4079 777\",\r\n    \"dscPedido\": \"golpear la puerta el timbre no anda BIEN\",\r\n    \"totalPedido\": 5300 ,\r\n    \"totalPaga\": 7000,\r\n    \"totalVuelto\":1700,\r\n    \"pedidoDiferido\": false,\r\n    \"lineasPedido\":  \r\n        [\r\n            {\r\n                \"codProd\": \"10\",\r\n                \"cantidad\": 2,\r\n                \"detalles\": \r\n                [\r\n                    {\r\n                        \"codGusto\": 81,\r\n                        \"cantGusto\": 2\r\n                    },\r\n                    {\r\n                        \"codGusto\": 33,\r\n                        \"cantGusto\": 1\r\n                    },\r\n                    {\r\n                        \"codGusto\": 39,\r\n                        \"cantGusto\": 1\r\n                    },\r\n                    {\r\n                        \"codGusto\": 42,\r\n                        \"cantGusto\": 2\r\n                    }\r\n                ]\r\n            }, \r\n            {\r\n                \"codProd\": \"21\",\r\n                \"cantidad\": 2,\r\n                \"detalles\": \r\n                [\r\n                    {\r\n                        \"codGusto\": 81,\r\n                        \"cantGusto\": 1\r\n                    },\r\n                    {\r\n                        \"codGusto\": 33,\r\n                        \"cantGusto\": 1\r\n                    }\r\n                ]\r\n            }, \r\n            {\r\n                \"codProd\": \"21\",\r\n                \"cantidad\": 2,\r\n                \"detalles\": \r\n                [\r\n                    {\r\n                        \"codGusto\": 33,\r\n                        \"cantGusto\": 1\r\n                    },\r\n                    {\r\n                        \"codGusto\": 42,\r\n                        \"cantGusto\": 1\r\n                    }\r\n                ]\r\n            }   \r\n        ] \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/pedidos",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"pedidos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get By Id Pedido",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkZhY3VuZG8gQ2lnbGl1dGkiLCJlbWFpbCI6ImZjaWdsaXV0aUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJkb21pY2lsaW8iOiJSb2NhIDg5MCBEZXB0byAwMyIsIm1vYmJpbGUiOiIrNTQgOSAzNDIgNDA0IDk1NjciLCJpYXQiOjE2NjE4ODg3ODUsImV4cCI6MTY2MTkzMTk4NX0.hti8XE3ansjkXC1sKe3qM_1ZOy99D3dLSxjLj36YXZA",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/pedidos/idPedido/1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"pedidos",
+								"idPedido",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Pedidos Por Asignar",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkZhY3VuZG8gQ2lnbGl1dGkiLCJlbWFpbCI6ImZjaWdsaXV0aUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJkb21pY2lsaW8iOiJSb2NhIDg5MCBEZXB0byAwMyIsIm1vYmJpbGUiOiIrNTQgOSAzNDIgNDA0IDk1NjciLCJpYXQiOjE2NjE4ODg3ODUsImV4cCI6MTY2MTkzMTk4NX0.hti8XE3ansjkXC1sKe3qM_1ZOy99D3dLSxjLj36YXZA",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/pedidos/xAsignar",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"pedidos",
+								"xAsignar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get All Pedidos Asginado por Entregar",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkZhY3VuZG8gQ2lnbGl1dGkiLCJlbWFpbCI6ImZjaWdsaXV0aUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJkb21pY2lsaW8iOiJSb2NhIDg5MCBEZXB0byAwMyIsIm1vYmJpbGUiOiIrNTQgOSAzNDIgNDA0IDk1NjciLCJpYXQiOjE2NjEzODIzMzksImV4cCI6MTY2MTQyNTUzOX0.x2J-fv3lk5xFYcOfC38pnFSB38KfUtc4pS1NlE8kW4c",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/pedidos/xEntregar",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"pedidos",
+								"xEntregar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel by Id Pedido by Usuario",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OCwibmFtZSI6IlVubyBSb2JlcnRvIEdhcmNpYSIsImVtYWlsIjoicm9iZXJ0bzAxQG1haWxpbmF0b3IuY29tIiwicm9sZSI6IlVTRVIiLCJkb21pY2lsaW8iOiJSb2NhIDEwMSBQaXNvIDFlcm8gIERlcHRvIDAxIiwibW9iYmlsZSI6Iis1NCA5IDM0MiA0MDQgOTU2NyIsImlhdCI6MTY2MTY0MzQwNCwiZXhwIjoxNjYxNjg2NjA0fQ.-ISWIfKgCOyq16RDdYpwBXkkkpuAndiHSAojpUV-PM4",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"motivoCancelUs\": \"tardo mucho el cadete mas de 1 hora.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/pedidos/cancelByUs/idPedido/24",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"pedidos",
+								"cancelByUs",
+								"idPedido",
+								"24"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel by Id Pedido by  Heladeria",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkZhY3VuZG8gQ2lnbGl1dGkiLCJlbWFpbCI6ImZjaWdsaXV0aUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJkb21pY2lsaW8iOiJSb2NhIDg5MCBEZXB0byAwMyIsIm1vYmJpbGUiOiIrNTQgOSAzNDIgNDA0IDk1NjciLCJpYXQiOjE2NjE0NTQwMDcsImV4cCI6MTY2MTQ5NzIwN30.qGlMxVWjU8rPCN3ZIWZGxYeqEkWFuC53_ZsKPdYX-do",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"motivoCancelHel\": \"no se encuentra la dirección y no atiende el telefono.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/pedidos/cancelByHel/idPedido/2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"pedidos",
+								"cancelByHel",
+								"idPedido",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Asignar Pedido A Cadete by IdPed + idUserCadete with GMT time +00",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkZhY3VuZG8gQ2lnbGl1dGkiLCJlbWFpbCI6ImZjaWdsaXV0aUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJkb21pY2lsaW8iOiJSb2NhIDg5MCBEZXB0byAwMyIsIm1vYmJpbGUiOiIrNTQgOSAzNDIgNDA0IDk1NjciLCJpYXQiOjE2NjE0NTQwMDcsImV4cCI6MTY2MTQ5NzIwN30.qGlMxVWjU8rPCN3ZIWZGxYeqEkWFuC53_ZsKPdYX-do",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fecHsEstimadaArribo\": null,\r\n    \"idUserCadete\": 13\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/pedidos/asignCadete/idPedido/2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"pedidos",
+								"asignCadete",
+								"idPedido",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Entrega de Pedido by Id",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTEsIm5hbWUiOiJET1MgSmhvbnkgUMOpcmV6IiwiZW1haWwiOiJqaG9ueTAyQG1haWxpbmF0b3IuY29tIiwicm9sZSI6IkNBREVURSIsImRvbWljaWxpbyI6Ikpvc2UgSW5nZW5pZXJvICAyMDIgRGVwdG8gMDIgIiwibW9iYmlsZSI6Iis1NCA5IDM0MiA0IDA0OSA1NjciLCJpYXQiOjE2NjE0NzE4OTcsImV4cCI6MTY2MTUxNTA5N30.BcWySe24XeMND7bPBKwgq-Hb5-JT8dR7CI6B-AD5Fxc",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/pedidos/entregaPed/idPedido/1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"pedidos",
+								"entregaPed",
+								"idPedido",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Consultas",
+			"item": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "https://app-kiwi-backend.herokuapp.com/api",
+			"type": "string"
+		},
+		{
+			"key": "urlherku_ParaTeneAMano_NotFunction",
+			"value": "http://localhost:3000/api",
+			"type": "string"
+		}
+	]
+}
