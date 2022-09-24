@@ -28,10 +28,10 @@ app.use(cors()) // Use this after the variable declaration
 //ataja todas las rutas que arranquen con "api/auth" --> y las tira al /routes/auth.js
 app.use("/api/auth", authRouter );
 
-//ataja todas las rutas que arranquen con "api/user" --> y las tira al /routes/users.js
+//ataja todas las rutas que arranquen con "api/users" --> y las tira al /routes/users.js
 app.use("/api/users", usersRouter);
 
-//ataja todas las rutas que arranquen con "api/tiposGasto" --> y las tira al /routes/gustos.js
+//ataja todas las rutas que arranquen con "api/gustos" --> y las tira al /routes/gustos.js
 app.use("/api/gustos", gustosRouter);
 
 //ataja todas las rutas que arranquen con "api/productos" --> y las tira al /routes/productos.js

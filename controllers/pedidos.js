@@ -117,6 +117,8 @@ const createPedido = async (req, res, next) => {
 };
 
 
+
+
 const getById = async (req, res, next) => {
 //Permiso USER: solo sus pedidos  ADMIN y CADETES: todos
     console.log ("Va a buscar por idPedido -------> " + req.params.idPedido)
@@ -153,8 +155,34 @@ const getById = async (req, res, next) => {
     res.send(pedidoFinded)
 };
 
+const getLastPedido = async(req, res, next) => {
+    //Permiso: USER: solo su último pedido si tuviese 1.
+    //         ADMIN y CADETES: el último pedido cargado en la DB de todos los pedidos
+    console.log ("Va a buscar por último Pedido -------> ");
+    // Validaciones previas
+     
+    //Voy a Buscar el Pedido para ya tenerlo, para saber si existe y si tiene permiso para consultarlo de acuerdo a userId pertenece
+    const pedidoFinded  = await Pedido.Pedido.getLastPedido();
+    if (!pedidoFinded) { 
+        res.statusCode = 400;
+        res.send("No existe un Ulitmo Pedido aún.");
+        return;
+    };
+
+    //Veo de Permisos si puedo o no: ADMIN puede siempre, USER solo su Pedidos: ------------------------------
+    if (!usuarioTienePermisoConsultarPP(req.user.role, req.user.userId, pedidoFinded)) {
+        //Salgo El mensaje send ya salio en la funcion de arriba
+        res.status(401).json(moMensajeRes)
+        return
+    }
+    //Fin Evaluación de Permisos -------------------------------------
+
+    res.send(pedidoFinded)  
+    
+}
+
 const getAllPedidosPorAsignar = async (req, res, next) => {
-//Los permisos solo en el Controler: Solo ADMIN
+//Los permisos solo en el Router: Solo ADMIN
     console.log ("Va a buscar los Pedidos Por Asignar solo para ADMIN---> ")
     const allPedidosXAsign  = await Pedido.Pedido.getAllPedidosPorAsignar();
     // console.log("Response user", users);
@@ -162,7 +190,7 @@ const getAllPedidosPorAsignar = async (req, res, next) => {
 };
 
 const getAllPedidosAsignadosPorEntregar = async (req, res, next) => {
-//Los permisos solo en el Controler: Solo ADMIN
+//Los permisos solo en el Router: Solo ADMIN
     console.log ("Va a buscar los Pedidos Por Asigndos Por Entrear solo para ADMIN---> ")
     const allPedidosXAsign  = await Pedido.Pedido.getAllPedidosAsignadosPorEntregar();
     // console.log("Response user", users);

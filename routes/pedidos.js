@@ -12,11 +12,19 @@ console.log("antes de entrar al route /api/pedidos");
 router.post("/", auth.authorizationForAllUser, pedidosController.createPedido);
 // Esto genera un alta en DB.PostgreSQL en entidad/Tabla ttPedidos
 
-//   -->  /api/pedidos
+//   -->  /api/pedido
 //Para el Usuario Logueado solo podrá consutar su pedido "actual" o alguno viejo 
 //Para el Usuario con Role ADMIN podra consultar cualquier pedido
 router.get("/idPedido/:idPedido", auth.authorizationForAllUser ,pedidosController.getById);
-// Esto trae un json {} con todos los pedidos disponibles en la tabla ttPedidos
+// Esto trae un json {} el pedido disponibles en la tabla ttPedidos de ese idPedido pasado por param en la url
+//Comprobación Final de Permisos a hacer en Controller
+
+//# 24/09/2022 Agregado 
+//   -->  /api/pedidos/lastPedido
+//Para el Usuario Logueado solo podrá consutar su Ultimo Pedido si lo tuviese 
+//Para el Usuario con Role ADMIN podra consultar el último pedido que se acaba dar de alta en la DB (para control x backend)
+router.get("/lastPedido", auth.authorizationForAllUser ,pedidosController.getLastPedido);
+// Esto trae un json {} el pedido disponibles en la tabla ttPedidos con el detalle de los productos + el detalle de las lineas + los gustos de cada producto/linea.
 //Comprobación Final de Permisos a hacer en Controller
 
 //   -->  /api/pedidos/xAsignar

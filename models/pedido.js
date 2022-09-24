@@ -63,6 +63,31 @@ async save() {
     }   
   }
 
+  static async getLastPedido(idPedido) {
+    console.log("==> getById --> " +  idPedido)
+    try {
+      const pedidoFinded = await prisma.ttPedidos.findFirst({
+        include: { 
+          ttPedidosLineas: true, 
+          include: {
+            ttPedidosLineasDetalle: true, 
+            include: {
+              ttGustos: true,
+            },
+          },
+        },
+        orderBy: {
+          idPedido: 'desc',
+        },
+      })
+      return pedidoFinded;
+    } catch (error) {
+        console.log(error);
+        throw new Error(error);
+    }   
+  }
+
+
   static async getAllPedidosPorAsignar() {
     try {
         const allPedidosXAsignar = await prisma.ttPedidos.findMany({
