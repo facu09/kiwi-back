@@ -158,28 +158,36 @@ const getById = async (req, res, next) => {
 const getLastPedido = async(req, res, next) => {
     //Permiso: USER: solo su último pedido si tuviese 1.
     //         ADMIN y CADETES: el último pedido cargado en la DB de todos los pedidos
-    console.log ("Va a buscar por último Pedido -------> ");
-    // Validaciones previas
+    console.log ("Va a buscar por último Pedido .-------> Tipo Usuario: '" + req.user.role +  "', Usuario: '" + req.user.userId +"'." );
+    let pedidoLastFind = {}
      
-    //Voy a Buscar el Pedido para ya tenerlo, para saber si existe y si tiene permiso para consultarlo de acuerdo a userId pertenece
-    const pedidoFinded  = await Pedido.Pedido.getLastPedido();
-    if (!pedidoFinded) { 
-        res.statusCode = 400;
-        res.send("No existe un Ulitmo Pedido aún.");
-        return;
-    };
+    if (req.user.role === 'ADMIN' || req.user.role === 'CADETE') {
+        //Traigo el último pedido de la DB
+        pedidoLastFind  = await Pedido.Pedido.getLastPedido();
+        if (!pedidoLastFind) { 
+            res.statusCode = 400;
+            res.send("No existe un Ulitmo Pedido aún en la DB.");
+            return;
+        }
 
-    //Veo de Permisos si puedo o no: ADMIN puede siempre, USER solo su Pedidos: ------------------------------
-    if (!usuarioTienePermisoConsultarPP(req.user.role, req.user.userId, pedidoFinded)) {
-        //Salgo El mensaje send ya salio en la funcion de arriba
-        res.status(401).json(moMensajeRes)
-        return
-    }
-    //Fin Evaluación de Permisos -------------------------------------
-
-    res.send(pedidoFinded)  
+    } else {
+    // Si es un usuario comun (No ADMIN Ni CADETE)
+        //Busco el ultimo pedido de ese Usuario si lo hubiera
+        pedidoLastFind  = await Pedido.Pedido.getLasPedidDeUnUsuario(req.user.userId);
+        if (!pedidoLastFind) { 
+            res.statusCode = 400;
+            res.send("No existe un Ulitmo Pedido aún.");
+            return;
+        };
+    } 
     
-}
+    if (pedidoLastFind) {
+        res.send(pedidoLastFind)  
+    }else {
+        res.send("No existe un Ulitmo Pedido aún.");
+    }
+}    
+
 
 const getAllPedidosPorAsignar = async (req, res, next) => {
 //Los permisos solo en el Router: Solo ADMIN
@@ -563,6 +571,7 @@ const usuarioTienePermisoConsultarPP = (userRoleToken, userIdToken, pedidoFinded
 module.exports = {
     createPedido,
     getById,
+    getLastPedido,
     getAllPedidosPorAsignar,
     getAllPedidosAsignadosPorEntregar,
     cancelPedidoByIdByUs,

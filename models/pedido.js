@@ -63,30 +63,52 @@ async save() {
     }   
   }
 
-  static async getLastPedido(idPedido) {
-    console.log("==> getById --> " +  idPedido)
+  static async getLastPedido() {
+    console.log("==> get Last Pedido --> "  )
     try {
       const pedidoFinded = await prisma.ttPedidos.findFirst({
-        include: { 
-          ttPedidosLineas: true, 
-          include: {
-            ttPedidosLineasDetalle: true, 
-            include: {
-              ttGustos: true,
-            },
-          },
-        },
-        orderBy: {
+         orderBy: {
           idPedido: 'desc',
         },
       })
       return pedidoFinded;
+      //habria que ver como hacerlo con SQL STRING directo
+
     } catch (error) {
         console.log(error);
         throw new Error(error);
     }   
   }
 
+  static async getLasPedidDeUnUsuario(piIdUser) {
+    console.log("==> get Last Pedido de 1 Usuario--> "  )
+    try {
+      const pedidoFinded = await prisma.ttPedidos.findFirst({
+        where: {
+          userId: parseInt(piIdUser,10),
+        },
+        orderBy: {
+          idPedido: 'desc',
+        },
+      })
+      return pedidoFinded;
+      //habria que ver como hacerlo con SQL STRING directo
+      
+    } catch (error) {
+        console.log(error);
+        throw new Error(error);
+    }   
+  }
+
+  // {
+  //   include: {
+  //     ttPedidosLineasDetalle: {
+  //       include: {
+  //         ttGustos: true,
+  //       },
+  //     }, 
+  //   },
+  // },
 
   static async getAllPedidosPorAsignar() {
     try {
