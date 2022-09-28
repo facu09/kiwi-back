@@ -153,7 +153,7 @@ const getById = async (req, res, next) => {
     res.send(pedidoFinded)
 };
 
-const getLastPedido = async(req, res, next) => {
+const getLastPedidoRaws = async(req, res, next) => {
     //Permiso: USER: solo su último pedido si tuviese 1.
     //         ADMIN y CADETES: el último pedido cargado en la DB de todos los pedidos
     console.log ("Va a buscar por último Pedido .-------> Tipo Usuario: '" + req.user.role +  "', Usuario: '" + req.user.userId +"'." );
@@ -161,7 +161,7 @@ const getLastPedido = async(req, res, next) => {
      
     if (req.user.role === 'ADMIN' || req.user.role === 'CADETE') {
         //Traigo el último pedido de la DB
-        pedidoLastFind  = await Pedido.Pedido.getLastPedido();
+        pedidoLastFind  = await Pedido.Pedido.getLastPedidoRows();
         if (!pedidoLastFind) { 
             res.statusCode = 400;
             res.send("No existe un Ulitmo Pedido aún en la DB.");
@@ -171,7 +171,7 @@ const getLastPedido = async(req, res, next) => {
     } else {
     // Si es un usuario comun (No ADMIN Ni CADETE)
         //Busco el ultimo pedido de ese Usuario si lo hubiera
-        pedidoLastFind  = await Pedido.Pedido.getLasPedidDeUnUsuario(req.user.userId);
+        pedidoLastFind  = await Pedido.Pedido.getLasPedidDeUnUsuarioInRaws(req.user.userId);
         if (!pedidoLastFind) { 
             res.statusCode = 400;
             res.send("No existe un Ulitmo Pedido aún.");
@@ -186,6 +186,38 @@ const getLastPedido = async(req, res, next) => {
     }
 }    
 
+const getLastPedidoJson = async(req, res, next) => {
+    //Permiso: USER: solo su último pedido si tuviese 1.
+    //         ADMIN y CADETES: el último pedido cargado en la DB de todos los pedidos
+    console.log ("Va a buscar por último Pedido .-------> Tipo Usuario: '" + req.user.role +  "', Usuario: '" + req.user.userId +"'." );
+    let pedidoLastFind = {}
+     
+    if (req.user.role === 'ADMIN' || req.user.role === 'CADETE') {
+        //Traigo el último pedido de la DB
+        pedidoLastFind  = await Pedido.Pedido.getLastPedidoInJson();
+        if (!pedidoLastFind) { 
+            res.statusCode = 400;
+            res.send("No existe un Ulitmo Pedido aún en la DB.");
+            return;
+        }
+
+    } else {
+    // Si es un usuario comun (No ADMIN Ni CADETE)
+        //Busco el ultimo pedido de ese Usuario si lo hubiera
+        pedidoLastFind  = await Pedido.Pedido.getLasPedidDeUnUsuarioInJson(req.user.userId);
+        if (!pedidoLastFind) { 
+            res.statusCode = 400;
+            res.send("No existe un Ulitmo Pedido aún.");
+            return;
+        };
+    } 
+    
+    if (pedidoLastFind) {
+        res.send(pedidoLastFind)  
+    }else {
+        res.send("No existe un Ulitmo Pedido aún.");
+    }
+}    
 
 const getAllPedidosPorAsignar = async (req, res, next) => {
 //Los permisos solo en el Router: Solo ADMIN
@@ -569,7 +601,8 @@ const usuarioTienePermisoConsultarPP = (userRoleToken, userIdToken, pedidoFinded
 module.exports = {
     createPedido,
     getById,
-    getLastPedido,
+    getLastPedidoRaws,
+    getLastPedidoJson, 
     getAllPedidosPorAsignar,
     getAllPedidosAsignadosPorEntregar,
     cancelPedidoByIdByUs,

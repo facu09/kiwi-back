@@ -20,11 +20,19 @@ router.get("/idPedido/:idPedido", auth.authorizationForAllUser ,pedidosControlle
 //Comprobación Final de Permisos a hacer en Controller
 
 //# 24/09/2022 Agregado 
-//   -->  /api/pedidos/lastPedido
+//   -->  /api/pedidos/lastPedidoRaws
 //Para el Usuario Logueado solo podrá consutar su Ultimo Pedido si lo tuviese 
-//Para el Usuario con Role ADMIN podra consultar el último pedido que se acaba dar de alta en la DB (para control x backend)
-router.get("/lastPedido", auth.authorizationForAllUser ,pedidosController.getLastPedido);
-// Esto trae un json {} el pedido disponibles en la tabla ttPedidos con el detalle de los productos + el detalle de las lineas + los gustos de cada producto/linea.
+//Para el Usuario con Role ADMIN o CADETE podra consultar el último pedido que se acaba dar de alta en la DB (para control x backend)
+router.get("/lastPedidoRaws", auth.authorizationForAllUser ,pedidosController.getLastPedidoRaws);
+// Esto trae un Arreglo de [] de Json {} el pedido disponibles en la tabla ttPedidos con el detalle de los productos + el detalle de las lineas + los gustos de cada producto/linea.
+//Comprobación Final de Permisos a hacer en Controller
+
+//# 28/09/2022 Agregado 
+//   -->  /api/pedidos/lastPedidoJson
+//Para el Usuario Logueado solo podrá consutar su Ultimo Pedido si lo tuviese 
+//Para el Usuario con Role ADMIN o CADETE podra consultar el último pedido que se acaba dar de alta en la DB (para control x backend)
+router.get("/lastPedidoJson", auth.authorizationForAllUser ,pedidosController.getLastPedidoJson);
+// Esto trae un Json anidado {} y adentro {lineas {gustos} } el pedido disponibles en la tabla ttPedidos con el detalle de los productos + el detalle de las lineas + los gustos de cada producto/linea.
 //Comprobación Final de Permisos a hacer en Controller
 
 //   -->  /api/pedidos/xAsignar

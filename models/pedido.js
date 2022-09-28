@@ -79,9 +79,10 @@ async save() {
 
   // 26/09/2022 Andando con Prisma:
   //Traigo el ultimo pedido de la DB para control con Lineas y Gustos de cada Linea.
-  static async getLastPedido() {
+  static async getLastPedidoRows() {
     console.log("==> get Last Pedido con líneas y gustos de cada una:--> "  )
     try {
+      //obtengo el ultimo pedido ingresado en el DB
       const pedidoFinded = await prisma.ttPedidos.findFirst({
          orderBy: {
           idPedido: 'desc',
@@ -90,7 +91,7 @@ async save() {
       console.log ("IdPedido en cuestion: --> " + pedidoFinded)
     
       // // Con SQL String directo con POOL, y convinado con una vista creada desde pgAdmin4 (vst02_LineasPedido) que ya esta armda puedo filtrar mas facil.
-      // //  La contra que el json no queda como json queda como tabla con campos repetidos. ==> de esta manera quedará para el FronEnd la responsabilidad de parsear bien los datos a como deban mostrarse.
+      // //  La contra que lo que devuelve no queda como json queda como un Arreglo de jsons. ==> de esta manera quedará para el FronEnd la responsabilidad de parsear bien los datos a como deban mostrarse.
       // const pedidoFindedCompleto = await pool.query('SELECT * ' + 
       //   ' FROM "vst02_LineasPedido" AS V ' + 
       //   ' WHERE "idPedido" =  ' + pedidoFinded.idPedido + 
@@ -98,28 +99,11 @@ async save() {
       // // console.log( resultados.rows);
       // return pedidoFindedCompleto.rows
       
-      //Idem anterior con Prisma mandando SQLString directo
+      //Version con Prisma: mandando SQLString directo y accediendo a la vista
+      // ==> anduvo ok
       const pedidoFindedCompleto = await prisma.$queryRaw `SELECT * FROM "vst02_LineasPedido" WHERE "idPedido" = ${pedidoFinded.idPedido}` 
-    //   const pedidoFindedCompleto = await prisma.$queryRaw(`SELECT pl."idLinea",
-    //   pl."idPedido", 
-    //   pl."codProd",
-    //   p."nomProd",
-    //   pl.cantidad,
-    //   pl."precioUnit",
-    //   pl.importe,
-    //   pl."importeConIVA",
-    //   pl."dscLinea",
-    //   pld."idDetalleLineaPed",
-    //   pld."idLineaPedido",
-    //   pld."codGusto",
-    //   pld."cantGusto",
-    //   g."nombreGusto"
-    //  FROM "ttPedidosLineas" pl
-    //    JOIN "ttProductos" p ON pl."codProd"::text = p."codProd"::text
-    //    JOIN ("ttPedidosLineasDetalle" pld
-    //    JOIN "ttGustos" g ON pld."codGusto" = g."codGusto") ON pl."idLinea" = pld."idLineaPedido" 
-    //  WHERE pl."idPedido" = ` + pedidoFinded.idPedido + `;`)
-
+      // podria haber mandado consulta de la vista directamente
+  
       return pedidoFindedCompleto
 
       // // ALTERNATIVA 1: acceder a la Vista creaada desde pgAdmin4 ==> no funciona prisma así, hay que meterle inteligencia leer instructivo: https://www.prisma.io/docs/guides/database/advanced-database-tasks/sql-views-postgres
@@ -143,22 +127,57 @@ async save() {
     }   
   }
 
-  // // Lo mudo a String SQL directo
-  // static async getLastPedido() {
-  //   console.log("==> get Last Pedido SQL x StringSQL directo --> "  )
-  //   try {
-  //     const lastOrderDB = await pool.query()
-  //     return pedidoFinded;
-  //     //habria que ver como hacerlo con SQL STRING directo
+  // 28/09/2022 Andando con Prisma:
+  //Traigo el ultimo pedido de la DB para control con Lineas y Gustos de cada Linea en modo Json son por cada linea 3 consultas a la DB ==> tarde bocha, pero bueno queda asi. Sirve como trabajo y aprendizaje.
+  static async getLastPedidoInJson() {
+    console.log("==> get Last Pedido con líneas y gustos de cada una:--> "  )
+    try {
+      //obtengo el ultimo pedido ingresado en el DB
+      const pedidoFinded = await prisma.ttPedidos.findFirst({
+         orderBy: {
+          idPedido: 'desc',
+        },
+      })
+      console.log ("IdPedido en cuestion: --> " + pedidoFinded)
+      
+      const  pedidoFindedCompleto = await completaLineasPedidoYGustos(pedidoFinded)
 
-  //   } catch (error) {
-  //       console.log(error);
-  //       throw new Error(error);
-  //   }   
-  // }
+      return pedidoFindedCompleto
+      // acá habria que haber trabajado con relaciones adentro del modelo de prisma para simplificar y usar los include.
+   
+    } catch (error) {
+        console.log(error);
+        throw new Error(error);
+    }   
+  }
 
 
-  static async getLasPedidDeUnUsuario(piIdUser) {
+
+  static async getLasPedidDeUnUsuarioInRaws(piIdUser) {
+    console.log("==> get Last Pedido de 1 Usuario--> "  )
+    try {
+      //Obtengo el último pedido del Usuario
+      const pedidoFinded = await prisma.ttPedidos.findFirst({
+        where: {
+          userId: parseInt(piIdUser,10),
+        },
+        orderBy: {
+          idPedido: 'desc',
+        },
+      })
+
+      //Luego obtengo el detalle en Raws
+      const pedidoFindedCompleto = await prisma.$queryRaw `SELECT * FROM "vst02_LineasPedido" WHERE "idPedido" = ${pedidoFinded.idPedido}` 
+
+      return pedidoFindedCompleto;
+      
+    } catch (error) {
+        console.log(error);
+        throw new Error(error);
+    }   
+  }
+
+  static async getLasPedidDeUnUsuarioInJson(piIdUser) {
     console.log("==> get Last Pedido de 1 Usuario--> "  )
     try {
       const pedidoFinded = await prisma.ttPedidos.findFirst({
@@ -172,7 +191,7 @@ async save() {
 
       const  pedidoFindedCompleto = await completaLineasPedidoYGustos(pedidoFinded)
 
-      return pedidoFinded;
+      return pedidoFindedCompleto;
       //habria que ver como hacerlo con SQL STRING directo
       
     } catch (error) {
@@ -182,11 +201,10 @@ async save() {
   }
 
   // ## Falta: no pude usar los include xque no use relaciones jajajajaja
-  //           para algo sirven las relaciones paaaaa
-  //           voy a tratar de montar 1 vista y ver si puedo usarla para que se mas 
-  //           facil y ver si arma el json resultante
-  //           Para zafar de los 2 do whiles y recorridos con busqueda re primario mal
-  //          --> una burrada 6 segundos para traer 1 pedido  buuuuuu!!!!
+  //     para algo sirven las relaciones paaaaa
+  //     voy a tratar de montar 1 vista y ver si puedo usarla para que se mas facil y ver si arma el json resultante
+  //     Para zafar de los 2 do whiles y recorridos con busqueda re primario mal
+  //    --> una burrada 4 segundos para traer 1 pedido  buuuuuu!!!!
   //            ==>  Bueno che estoy aprendiendo jajajajaja
   // {
   //   include: {

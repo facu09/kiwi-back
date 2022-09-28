@@ -43,7 +43,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"fcigliuti@gmail.com\",\r\n    \"password\": \"pass12345\"\r\n}",
+							"raw": "{\r\n    \"email\": \"fcigliuti@mailinator.com\",\r\n    \"password\": \"pass12345\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -263,13 +263,13 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkZhY3VuZG8gQ2lnbGl1dGkiLCJlbWFpbCI6ImZjaWdsaXV0aUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJkb21pY2lsaW8iOiJSb2NhIDg5MCBEZXB0byAwMyIsIm1vYmJpbGUiOiIrNTQgOSAzNDIgNDA0IDk1NjciLCJpYXQiOjE2NjM5NjYyNjAsImV4cCI6MTY2NDAwOTQ2MH0.hAroHnoSzyaw-EIL__JAoBqrTZNl165vZk1Y3jHtM9M",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkZhY3VuZG8gQ2lnbGl1dGkiLCJlbWFpbCI6ImZjaWdsaXV0aUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE2NjEwOTY3MjgsImV4cCI6MTY2MTEwMjEyOH0.wMlB0n7pNqc9zjkmku5GkI3inY_ILVVPnTRIhFjq-JY",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"codGusto\": 105,\r\n    \"nombreGusto\": \"Crema marmolada\",\r\n    \"dscGusto\": \"Crema marmolada de la casa.\"\r\n}\r\n",
+							"raw": "{\r\n    \"codGusto\": 104,\r\n    \"nombreGusto\": \"Crema marmolada\",\r\n    \"dscGusto\": \"Crema marmolada de la casa.\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -346,19 +346,19 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkZhY3VuZG8gQ2lnbGl1dGkiLCJlbWFpbCI6ImZjaWdsaXV0aUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJkb21pY2lsaW8iOiJSb2NhIDg5MCBEZXB0byAwMyIsIm1vYmJpbGUiOiIrNTQgOSAzNDIgNDA0IDk1NjciLCJpYXQiOjE2NjM5NjYyNjAsImV4cCI6MTY2NDAwOTQ2MH0.hAroHnoSzyaw-EIL__JAoBqrTZNl165vZk1Y3jHtM9M",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkZhY3VuZG8gQ2lnbGl1dGkiLCJlbWFpbCI6ImZjaWdsaXV0aUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE2NjEwOTY3MjgsImV4cCI6MTY2MTEwMjEyOH0.wMlB0n7pNqc9zjkmku5GkI3inY_ILVVPnTRIhFjq-JY",
 								"type": "text"
 							}
 						],
 						"url": {
-							"raw": "{{url}}/gustos/codGusto/113",
+							"raw": "{{url}}/gustos/codGusto/104",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"gustos",
 								"codGusto",
-								"113"
+								"104"
 							]
 						}
 					},
@@ -540,69 +540,19 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkZhY3VuZG8gQ2lnbGl1dGkiLCJlbWFpbCI6ImZjaWdsaXV0aUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJkb21pY2lsaW8iOiJSb2NhIDg5MCBEZXB0byAwMyIsIm1vYmJpbGUiOiIrNTQgOSAzNDIgNDA0IDk1NjciLCJpYXQiOjE2NjM4ODY4MTksImV4cCI6MTY2MzkzMDAxOX0.I0U_A_hZURYjDM-MClC34oa6ojPGxogMJpLeyuZDMqs",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkZhY3VuZG8gQ2lnbGl1dGkiLCJlbWFpbCI6ImZjaWdsaXV0aUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJkb21pY2lsaW8iOiJSb2NhIDg5MCBEZXB0byAwMyIsIm1vYmJpbGUiOiIrNTQgOSAzNDIgNDA0IDk1NjciLCJpYXQiOjE2NjE4ODg3ODUsImV4cCI6MTY2MTkzMTk4NX0.hti8XE3ansjkXC1sKe3qM_1ZOy99D3dLSxjLj36YXZA",
 								"type": "text"
 							}
 						],
 						"url": {
-							"raw": "{{url}}/pedidos/idPedido/34",
+							"raw": "{{url}}/pedidos/idPedido/1",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"pedidos",
 								"idPedido",
-								"34"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Last Pedido Detalle in Raws",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTgsIm5hbWUiOiJOdWV2ZSBSb2JlcnRvIEdhcmNpYSIsImVtYWlsIjoicm9iZXJ0bzEwQG1haWxpbmF0b3IuY29tIiwicm9sZSI6IlVTRVIiLCJkb21pY2lsaW8iOiJSb2NhIDEwMTAgcGlzbyAxMCBkZXB0by4gMTAiLCJtb2JiaWxlIjoiKzU0IDkgMzQyIDQwNzkgNTY3IiwiaWF0IjoxNjY0MzkyNjg4LCJleHAiOjE2NjQ0MzU4ODh9.NjsHrGaW_lIRfynNIZTpFVqJ9PUhfDyQJ5nAaLPAiTM",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{url}}/pedidos/lastPedidoRaws/",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"pedidos",
-								"lastPedidoRaws",
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Last Pedido Detalle in json Lento",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTgsIm5hbWUiOiJOdWV2ZSBSb2JlcnRvIEdhcmNpYSIsImVtYWlsIjoicm9iZXJ0bzEwQG1haWxpbmF0b3IuY29tIiwicm9sZSI6IlVTRVIiLCJkb21pY2lsaW8iOiJSb2NhIDEwMTAgcGlzbyAxMCBkZXB0by4gMTAiLCJtb2JiaWxlIjoiKzU0IDkgMzQyIDQwNzkgNTY3IiwiaWF0IjoxNjY0MzkyNjg4LCJleHAiOjE2NjQ0MzU4ODh9.NjsHrGaW_lIRfynNIZTpFVqJ9PUhfDyQJ5nAaLPAiTM",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{url}}/pedidos/lastPedidoJson/",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"pedidos",
-								"lastPedidoJson",
-								""
+								"1"
 							]
 						}
 					},
@@ -615,7 +565,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkZhY3VuZG8gQ2lnbGl1dGkiLCJlbWFpbCI6ImZjaWdsaXV0aUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJkb21pY2lsaW8iOiJSb2NhIDg5MCBEZXB0byAwMyIsIm1vYmJpbGUiOiIrNTQgOSAzNDIgNDA0IDk1NjciLCJpYXQiOjE2NjM4ODY4MTksImV4cCI6MTY2MzkzMDAxOX0.I0U_A_hZURYjDM-MClC34oa6ojPGxogMJpLeyuZDMqs",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkZhY3VuZG8gQ2lnbGl1dGkiLCJlbWFpbCI6ImZjaWdsaXV0aUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJkb21pY2lsaW8iOiJSb2NhIDg5MCBEZXB0byAwMyIsIm1vYmJpbGUiOiIrNTQgOSAzNDIgNDA0IDk1NjciLCJpYXQiOjE2NjE4ODg3ODUsImV4cCI6MTY2MTkzMTk4NX0.hti8XE3ansjkXC1sKe3qM_1ZOy99D3dLSxjLj36YXZA",
 								"type": "text"
 							}
 						],
@@ -816,17 +766,12 @@
 	],
 	"variable": [
 		{
-			"key": "url_Heroku",
+			"key": "url",
 			"value": "https://app-kiwi-backend.herokuapp.com/api",
 			"type": "string"
 		},
 		{
 			"key": "urlherku_ParaTeneAMano_NotFunction",
-			"value": "http://localhost:3000/api",
-			"type": "string"
-		},
-		{
-			"key": "url",
 			"value": "http://localhost:3000/api",
 			"type": "string"
 		}
