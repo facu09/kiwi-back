@@ -117,8 +117,6 @@ const createPedido = async (req, res, next) => {
 };
 
 
-
-
 const getById = async (req, res, next) => {
 //Permiso USER: solo sus pedidos  ADMIN y CADETES: todos
     console.log ("Va a buscar por idPedido -------> " + req.params.idPedido)
