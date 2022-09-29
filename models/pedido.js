@@ -90,7 +90,7 @@ async save() {
       })
       console.log ("IdPedido en cuestion: --> " + pedidoFinded)
     
-      // // Con SQL String directo con POOL, y convinado con una vista creada desde pgAdmin4 (vst02_LineasPedido) que ya esta armda puedo filtrar mas facil.
+      // // Con SQL String directo con POOL, y combinado con una vista creada desde pgAdmin4 (vst02_LineasPedido) que ya esta armda puedo filtrar mas facil.
       // //  La contra que lo que devuelve no queda como json queda como un Arreglo de jsons. ==> de esta manera quedará para el FronEnd la responsabilidad de parsear bien los datos a como deban mostrarse.
       // const pedidoFindedCompleto = await pool.query('SELECT * ' + 
       //   ' FROM "vst02_LineasPedido" AS V ' + 
@@ -101,10 +101,12 @@ async save() {
       
       //Version con Prisma: mandando SQLString directo y accediendo a la vista
       // ==> anduvo ok
-      const pedidoFindedCompleto = await prisma.$queryRaw `SELECT * FROM "vst02_LineasPedido" WHERE "idPedido" = ${pedidoFinded.idPedido}` 
+      const pedidoFindedGustosLineasPed= await prisma.$queryRaw `SELECT * FROM "vst02_LineasPedido" WHERE "idPedido" = ${pedidoFinded.idPedido}` 
       // podria haber mandado consulta de la vista directamente
-  
-      return pedidoFindedCompleto
+      
+      pedidoFinded.GustosLineas = pedidoFindedGustosLineasPed
+
+      return pedidoFinded
 
       // // ALTERNATIVA 1: acceder a la Vista creaada desde pgAdmin4 ==> no funciona prisma así, hay que meterle inteligencia leer instructivo: https://www.prisma.io/docs/guides/database/advanced-database-tasks/sql-views-postgres
       // const pedidoFindedCompleto = await prisma.vst02_LineasPedido.findMany({
@@ -166,10 +168,11 @@ async save() {
         },
       })
 
-      //Luego obtengo el detalle en Raws
-      const pedidoFindedCompleto = await prisma.$queryRaw `SELECT * FROM "vst02_LineasPedido" WHERE "idPedido" = ${pedidoFinded.idPedido}` 
+      //Luego obtengo el detalle en Raws de las lineas del Pedido
+      const pedidoFindedGustosLineasPed = await prisma.$queryRaw `SELECT * FROM "vst02_LineasPedido" WHERE "idPedido" = ${pedidoFinded.idPedido}` 
+      pedidoFinded.GustosLineas = pedidoFindedGustosLineasPed
 
-      return pedidoFindedCompleto;
+      return pedidoFinded
       
     } catch (error) {
         console.log(error);
