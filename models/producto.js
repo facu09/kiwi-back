@@ -33,7 +33,12 @@ async save() {
 
   static async getAllProductos() {
     try {
-        const allProductos = await prisma.ttProductos.findMany()
+        const allProductos = await prisma.ttProductos.findMany({
+          orderBy: {
+            nomProd: 'asc',
+          },
+        })
+       
         return allProductos
     } catch (error) {
         console.log(error);
