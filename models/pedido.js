@@ -181,7 +181,7 @@ async save() {
   }
 
   static async getLasPedidDeUnUsuarioInJson(piIdUser) {
-    console.log("==> get Last Pedido de 1 Usuario--> "  )
+    console.log("==> get Last Pedido de UN Usuario in Json--> "  )
     try {
       const pedidoFinded = await prisma.ttPedidos.findFirst({
         where: {
@@ -192,11 +192,20 @@ async save() {
         },
       })
 
-      const  pedidoFindedCompleto = await completaLineasPedidoYGustos(pedidoFinded)
+      if (pedidoFinded) {
+        console.log("Encontró pedido y va a buscar ")
+        const  pedidoFindedCompleto = await completaLineasPedidoYGustos(pedidoFinded)
 
-      return pedidoFindedCompleto;
-      //habria que ver como hacerlo con SQL STRING directo
-      
+        console.log("--> Terminó de encontrar y armar el último pedido del usuario");
+        console.log (pedidoFindedCompleto);
+        return pedidoFindedCompleto;
+        //habria que ver como hacerlo con SQL STRING directo
+      } else {
+        
+        console.log("--> Sale por el Null no hay último pedido para el usario: --> ", piIdUser);
+        return null
+      }
+ 
     } catch (error) {
         console.log(error);
         throw new Error(error);

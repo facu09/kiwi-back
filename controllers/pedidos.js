@@ -164,7 +164,9 @@ const getLastPedidoRaws = async(req, res, next) => {
         pedidoLastFind  = await Pedido.Pedido.getLastPedidoRows();
         if (!pedidoLastFind) { 
             res.statusCode = 400;
-            res.send("No existe un Ulitmo Pedido aún en la DB.");
+            res.send({
+                code: 401,
+                mensaje: "No existe un úlitmo Pedido aún en la DB."});
             return;
         }
 
@@ -174,7 +176,9 @@ const getLastPedidoRaws = async(req, res, next) => {
         pedidoLastFind  = await Pedido.Pedido.getLasPedidDeUnUsuarioInRaws(req.user.userId);
         if (!pedidoLastFind) { 
             res.statusCode = 400;
-            res.send("No existe un Ulitmo Pedido aún.");
+            res.send({
+                code: 401,
+                mensaje: "No existe un úlitmo Pedido aún en la DB."});
             return;
         };
     } 
@@ -182,14 +186,14 @@ const getLastPedidoRaws = async(req, res, next) => {
     if (pedidoLastFind) {
         res.send(pedidoLastFind)  
     }else {
-        res.send("No existe un Ulitmo Pedido aún.");
+        res.send("No existe un úlitmo Pedido aún en la DB.");
     }
 }    
 
 const getLastPedidoJson = async(req, res, next) => {
     //Permiso: USER: solo su último pedido si tuviese 1.
     //         ADMIN y CADETES: el último pedido cargado en la DB de todos los pedidos
-    console.log ("Va a buscar por último Pedido .-------> Tipo Usuario: '" + req.user.role +  "', Usuario: '" + req.user.userId +"'." );
+    console.log (".Va a buscar por último Pedido .-------> Tipo Usuario: '" + req.user.role +  "', Id Usuario: '" + req.user.userId +"'." );
     let pedidoLastFind = {}
      
     if (req.user.role === 'ADMIN' || req.user.role === 'CADETE') {
@@ -197,7 +201,9 @@ const getLastPedidoJson = async(req, res, next) => {
         pedidoLastFind  = await Pedido.Pedido.getLastPedidoInJson();
         if (!pedidoLastFind) { 
             res.statusCode = 400;
-            res.send("No existe un Ulitmo Pedido aún en la DB.");
+            res.send({
+                code: 401,
+                mensaje: "No existe un úlitmo Pedido aún en la DB."});
             return;
         }
 
@@ -207,7 +213,9 @@ const getLastPedidoJson = async(req, res, next) => {
         pedidoLastFind  = await Pedido.Pedido.getLasPedidDeUnUsuarioInJson(req.user.userId);
         if (!pedidoLastFind) { 
             res.statusCode = 400;
-            res.send("No existe un Ulitmo Pedido aún.");
+            res.send({
+                code: 401,
+                mensaje: "No existe un úlitmo Pedido aún en la DB."});
             return;
         };
     } 
@@ -215,7 +223,10 @@ const getLastPedidoJson = async(req, res, next) => {
     if (pedidoLastFind) {
         res.send(pedidoLastFind)  
     }else {
-        res.send("No existe un Ulitmo Pedido aún.");
+        res.statusCode = 400;
+        res.send({
+            code: 401,
+            message: "No existe un úlitmo Pedido aún en la DB."});
     }
 }    
 
