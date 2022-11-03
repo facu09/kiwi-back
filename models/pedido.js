@@ -41,11 +41,13 @@ async save() {
             },
         });
         // console.log (this)
-        // console.log (newPed)
+        console.log(". En el MODEL/Pedido.save ==> muestro el newPed recien ingresado")
+        console.log (newPed)
         // return this; //devuelvo la instancia de pedido que se construyó
-        return newPed  //devuelvo el registro que se creo en DB para poder tener el idPedido Autonumerico que se creo
+        return newPed  //devuelvo el registro que se creo en DB para poder tener el idPedido Autonumerico que se creo o que no se creo
     } catch (err){
-        return "Error e models/pedidos" + err;
+        console.log(error);
+        throw new Error(error);
     }
   }
 
@@ -153,10 +155,8 @@ async save() {
     }   
   }
 
-
-
   static async getLasPedidDeUnUsuarioInRaws(piIdUser) {
-    console.log("==> get Last Pedido de 1 Usuario--> "  )
+    console.log("==> get Last Pedido de 1 Usuario in Raws--> "  )
     try {
       //Obtengo el último pedido del Usuario
       const pedidoFinded = await prisma.ttPedidos.findFirst({
@@ -191,20 +191,27 @@ async save() {
           idPedido: 'desc',
         },
       })
-
-      if (pedidoFinded) {
-        console.log("Encontró pedido y va a buscar ")
-        const  pedidoFindedCompleto = await completaLineasPedidoYGustos(pedidoFinded)
-
-        console.log("--> Terminó de encontrar y armar el último pedido del usuario");
-        console.log (pedidoFindedCompleto);
-        return pedidoFindedCompleto;
-        //habria que ver como hacerlo con SQL STRING directo
-      } else {
-        
+      // Sino tiene ningun pedido el usuario
+      if (!pedidoFinded) {
         console.log("--> Sale por el Null no hay último pedido para el usario: --> ", piIdUser);
+        return null  //Salgo y devulevo Null
+      }
+
+      //Si se encontró el pedido sigo armandolo
+      console.log("Encontró pedido y va a buscar sus Lineas y Detalle")
+      const  pedidoFindedCompleto = await completaLineasPedidoYGustos(pedidoFinded)
+
+      //Si hubo inconsistencias en el armado del pedido
+      if (!pedidoFindedCompleto) {
+        console.log("--> Hubo inconsistenias en el armado del pedido en la DB --> No se pudo reconstruir pedido ==> Sale por null");  
         return null
       }
+
+      //Si Pudo completar el Pedido:
+      console.log("--> Terminó de encontrar y armar el último pedido del usuario");
+      console.log (pedidoFindedCompleto);
+      return pedidoFindedCompleto;
+      //habria que ver como hacerlo con SQL STRING directo mas rapido
  
     } catch (error) {
         console.log(error);
@@ -384,9 +391,12 @@ async save() {
       });
       console.log (newLinea)
       return newLinea; //devuelvo la instancia de pedido que se construyó
-  } catch (err){
-      return "Error e models/pedidos" + err;
-  }
+ 
+  } catch (error) {
+    console.log("Error e models/pedidos: " + error);
+    throw new Error(error);
+  }   
+
 }
 }
 
@@ -412,85 +422,121 @@ class LineaPedidoDetalle {
         });
         console.log (newLineaDet)
         return newLineaDet; //devuelvo la instancia de pedido que se construyó
-    } catch (err){
-        return "Error e models/pedidos" + err;
+
+    } catch (error) {
+      console.log("Error e models/pedidos: " + error);
+      throw new Error(error);
     }
   }
 }
 
 // FUNCIONES REUSABLES -------------------------------------------------------------
 const completaLineasPedidoYGustos = async (pedido) => {
-//Funcion para completar las lineas del pedido y los nombres de los Gustos de cada linea  
-  let i;
-  
-  //Voy y busco las lineas del Pedido
-  const lineasPedidF = await prisma.ttPedidosLineas.findMany({
-    where: {
-      idPedido: pedido.idPedido,
-    },
-  });
+  try {  
+      //Funcion para completar las lineas del pedido y los nombres de los Gustos de cada linea  
+      let i;
+      
+      //Voy y busco las lineas del Pedido
+      const lineasPedidF = await prisma.ttPedidosLineas.findMany({
+        where: {
+          idPedido: pedido.idPedido,
+        },
+      });
 
-  //Recorro las lineas del Pedido para buscar su detalle (gustos) y agregarlos al json que estoy armando de cada linea
-  console.log("La Cantidad de lineas del Pedido en cuestion es: --> ", lineasPedidF.length);
-  i = 0;
-  do {
-    //Buco el nombre del codProducto y lo agrego
-    const productF = await prisma.ttProductos.findFirst({
-      where: {
-        codProd: lineasPedidF[i].codProd,
-      },
-    })
-    //Agrego el nomProducto de cada linea del Pedido
-    lineasPedidF[i].nomProd = productF.nomProd
+      //# 03/11/2022: Si NO existe la/s lineas de pedido
+      if (!lineasPedidF) {
+        //Salgo con Null
+        console.log("--> Sale por el Null no hay Líneas pedido para el usario: --> ", piIdUser);
+        return null
+      }
 
-    //Voy y busco la  descripcion de cada linea del pedido (que son los gustos)
-    const descPedidLinea = await prisma.ttPedidosLineasDetalle.findMany({
-      where: {
-        idLineaPedido: lineasPedidF[i].idLinea,
-      },
-    })
+      //# 03/11/2022: Si Hay Lineas de pedido Sigo y busco los nombres de productos y el detalle
 
-    //Agrego el nombre del codGusto del detalle de esa linea
-    const descPedidoLineaConNomGustos = await completaNomGustosLinea(descPedidLinea)
+      //Recorro las lineas del Pedido para buscar su detalle (gustos) y agregarlos al json que estoy armando de cada linea
+      console.log("La Cantidad de lineas del Pedido en cuestion es: --> ", lineasPedidF.length);
+      i = 0;
+      do {
+        //Busco el nombre del codProducto y lo agrego
+        const productF = await prisma.ttProductos.findFirst({
+          where: {
+            codProd: lineasPedidF[i].codProd,
+          },
+        })
+        //#03/11/2022 Si ya No existe ese producto (esta discontinuado)
+        if (!productF) {
+          lineasPedidF[i].nomProd = "Producto Discontinuado"
+        } else {
+          //Agrego el nomProducto de cada linea del Pedido
+          lineasPedidF[i].nomProd = productF.nomProd
+        }
 
-    //Agrego el Detalla de cada linea los gustos
-    lineasPedidF[i].detalles = descPedidoLineaConNomGustos
+        //Voy y busco la  descripcion de cada linea del pedido (que son los gustos)
+        const descPedidLinea = await prisma.ttPedidosLineasDetalle.findMany({
+          where: {
+            idLineaPedido: lineasPedidF[i].idLinea,
+          },
+        })
+        //# 03/11/2022 Agrego el negativo: Si NO existe la/s lineas de pedido por algun error
+        if (!descPedidLinea) {
+          //Salgo con Null
+          console.log("--> Sale por el Null no hay Detalla Lineas de pedido para el pedido: --> ", pedido);
+          return null
+        } 
+        //Si hay detalle lineas sigo adelante
+        //Agrego el nombre del codGusto del detalle de esa linea
+        const descPedidoLineaConNomGustos = await completaNomGustosLinea(descPedidLinea)
 
-      //Avanzo próximo linea del Pedido
-    i++;
-   
-    } while (i < lineasPedidF.length);
-  
-  //Agrego las lineas al Pedido entonctrado
-  pedido.lineasPedido = lineasPedidF
+         //Agrego el Detalla de cada linea los gustos
+         lineasPedidF[i].detalles = descPedidoLineaConNomGustos
 
-  return pedido
+          //Avanzo próximo linea del Pedido
+          i++;
+      
+        } while (i < lineasPedidF.length);
+      
+      //Agrego las lineas al Pedido entonctrado
+      pedido.lineasPedido = lineasPedidF
+
+      //Si llego acá es que armo bien el pedido y lo retorno,  si hay inconsistencia devuelve null
+      return pedido   //Finalizo y retorno el pedido 
+  } catch (error) {
+    console.log("Error e models/pedidos: " + error);
+    pedido = null  //Duda es como lo devuelvo...????????????
+                   //podria devoler Null y ya
+    return null
+    throw new Error(error);
+  }
 }
 
 const completaNomGustosLinea = async (descPedidLinea) => {
 //Le agrego al nombre del gusto a cada linea de detalle de la linea del pedido
 // descPedidoLinea son todos los registros de ttPedidosLineasDetalle de 1 Linea de Pedido
-  let j;
-  j = 0;
-  do{
-      const gustoDetalle = await prisma.ttGustos.findFirst({
-        where: {
-          codGusto: descPedidLinea[j].codGusto,
-        },
-      });
+  try { 
+    let j;
+    j = 0;
+    do{
+        const gustoDetalle = await prisma.ttGustos.findFirst({
+          where: {
+            codGusto: descPedidLinea[j].codGusto,
+          },
+        });
 
-       //Agrego el nombre Gusto al Json del detalle de la Linea
-      descPedidLinea[j].nomGusto = gustoDetalle.nombreGusto
-     
-      console.log("El nombre del gusto encontrado es: para la posicion " + j + " --> " + gustoDetalle.nombreGusto)
+        //Agrego el nombre Gusto al Json del detalle de la Linea
+        descPedidLinea[j].nomGusto = gustoDetalle.nombreGusto
+      
+        console.log("El nombre del gusto encontrado es: para la posicion " + j + " --> " + gustoDetalle.nombreGusto)
 
-      //avanzo en la lista del json
-      j++
-  } while (j < descPedidLinea.length);
+        //avanzo en la lista del json
+        j++
+    } while (j < descPedidLinea.length);
 
-  //finalmente retorno el json descPedidoLinea pero ya agregado el Nombre
-  return descPedidLinea
-
+    //finalmente retorno el json descPedidoLinea pero ya agregado el Nombre
+    return descPedidLinea
+ 
+  } catch (error) {
+      console.log("Error e models/pedidos: " + error);
+      throw new Error(error);
+  }
 }
 // FIN FUNCIONES REUSABLES --------------------------------------------------------------------------------
 
